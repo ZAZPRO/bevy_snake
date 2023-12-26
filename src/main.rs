@@ -7,7 +7,7 @@ use bevy_inspector_egui::quick::WorldInspectorPlugin;
 // use bevy_editor_pls::prelude::*;
 // use rand::{thread_rng, Rng};
 
-const GRID_CELL: f32 = 40.0;
+const GRID_CELL: f32 = 60.0;
 const GRID_SIZE: u32 = 13;
 const GRID_CENTER: u32 = GRID_SIZE / 2;
 
@@ -26,8 +26,8 @@ const TAIL_COLOR: Color = Color::rgb(0.15, 0.79, 0.58);
 const GAME_SPEED: Duration = Duration::from_millis(500);
 
 fn main() {
-    App::new()
-        .insert_resource(ClearColor(BACKGROUND_COLOR))
+    let mut app = App::new();
+    app.insert_resource(ClearColor(BACKGROUND_COLOR))
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
                 title: "Snake".into(),
@@ -36,12 +36,11 @@ fn main() {
                     maximize: false,
                     ..Default::default()
                 },
+                resizable: false,
                 ..default()
             }),
             ..default()
         }))
-        // .add_plugins(EditorPlugin::default())
-        .add_plugins(WorldInspectorPlugin::new())
         .register_type::<Cell>()
         .register_type::<Head>()
         .register_type::<Tail>()
@@ -60,8 +59,13 @@ fn main() {
                 update_cells_positions.run_if(on_timer(GAME_SPEED)),
             )
                 .chain(),
-        )
-        .run();
+        );
+
+    if cfg!(debug_assertions) {
+        app.add_plugins(WorldInspectorPlugin::new());
+    }
+
+    app.run();
 }
 
 #[derive(Component)]
