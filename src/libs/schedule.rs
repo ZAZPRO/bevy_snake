@@ -4,7 +4,9 @@ use bevy::prelude::*;
 pub enum InGameSet {
     DespawnEntities,
     UserInput,
+    SpawnEntities,
     EntityUpdates,
+    GlobalPostionUpdates,
     CollisionDetection,
 }
 
@@ -18,7 +20,9 @@ impl Plugin for SchedulePlugin {
                 InGameSet::DespawnEntities,
                 // Flush commands (i.e. `apply_deferred` runs)
                 InGameSet::UserInput,
+                InGameSet::SpawnEntities,
                 InGameSet::EntityUpdates,
+                InGameSet::GlobalPostionUpdates,
                 InGameSet::CollisionDetection,
             )
                 .chain(),
