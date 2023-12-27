@@ -1,31 +1,18 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::time::Duration;
-
 use bevy::prelude::*;
 use bevy::time::common_conditions::on_timer;
 use bevy_inspector_egui::prelude::*;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
+use snake::libs::{
+    globals::{
+        BACKGROUND_COLOR, FOOD_COLOR, GAME_SPEED, GRID_CELL, GRID_CENTER, HEAD_COLOR, TAIL_COLOR,
+        WINDOW_SIZE, GRID_SIZE,
+    },
+    utils::grid_to_screen,
+};
 // use bevy_editor_pls::prelude::*;
 // use rand::{thread_rng, Rng};
-
-const GRID_CELL: f32 = 60.0;
-const GRID_SIZE: u32 = 13;
-const GRID_CENTER: u32 = GRID_SIZE / 2;
-
-const WINDOW_SIZE: f32 = GRID_CELL * GRID_SIZE as f32;
-const LEFT_WINDOW_BORDER: f32 = -WINDOW_SIZE / 2.;
-// const RIGHT_WINDOW_BORDER: f32 = WINDOW_SIZE / 2.;
-const TOP_WINDOW_BORDER: f32 = WINDOW_SIZE / 2.;
-// const BOTTOM_WINDOW_BORDER: f32 = -WINDOW_SIZE / 2.;
-
-const BACKGROUND_COLOR: Color = Color::rgb(0.24, 0.25, 0.24);
-
-const FOOD_COLOR: Color = Color::rgb(0.9, 0.1, 0.1);
-const HEAD_COLOR: Color = Color::rgb(0.9, 0.9, 0.9);
-const TAIL_COLOR: Color = Color::rgb(0.15, 0.79, 0.58);
-
-const GAME_SPEED: Duration = Duration::from_millis(500);
 
 fn main() {
     let mut app = App::new();
@@ -161,7 +148,7 @@ struct Snake {
 }
 
 impl Snake {
-    fn new(commands: &mut Commands, snake: &mut ResMut<Snake>) -> Entity {
+    fn new(commands: &mut Commands, snake: &mut ResMut<Snake>) {
         let cell = Cell {
             x: GRID_CENTER,
             y: GRID_CENTER,
@@ -174,14 +161,13 @@ impl Snake {
             })
             .id();
         snake.parts.push(id);
-        id
     }
 
     fn new_tail(
         commands: &mut Commands,
         query: &Query<&Cell, Without<Food>>,
         snake: &mut ResMut<Snake>,
-    ) -> Entity {
+    ) {
         let last_id = snake.parts.last().unwrap();
         let last_cell = query.get(*last_id).unwrap();
 
@@ -190,7 +176,6 @@ impl Snake {
             .insert(Tail)
             .id();
         snake.parts.push(id);
-        id
     }
 }
 
@@ -211,7 +196,7 @@ impl FoodBundle {
         };
 
         Self {
-            food: Food {},
+            food: Food,
             cell: CellBundle::new(cell, FOOD_COLOR),
         }
     }
@@ -222,8 +207,7 @@ fn setup(mut commands: Commands, mut snake: ResMut<Snake>) {
     commands.spawn(FoodBundle::new(5, 5));
     commands.spawn(FoodBundle::new(8, 8));
 
-    let _: Entity = Snake::new(&mut commands, &mut snake);
-    // let id = Snake::new_tail(&mut commands, &mut snake);
+    Snake::new(&mut commands, &mut snake);
 
     commands.spawn(Camera2dBundle::default());
 }
@@ -372,12 +356,5 @@ fn on_eat(
 ) {
     for _ in ev_eat.read() {
         Snake::new_tail(&mut commands, &query, &mut snake);
-    }
-}
-
-fn grid_to_screen(grid_x: u32, grid_y: u32) -> Vec2 {
-    Vec2 {
-        x: LEFT_WINDOW_BORDER + GRID_CELL / 2. + GRID_CELL * grid_x as f32,
-        y: TOP_WINDOW_BORDER - GRID_CELL / 2. - GRID_CELL * grid_y as f32,
     }
 }
