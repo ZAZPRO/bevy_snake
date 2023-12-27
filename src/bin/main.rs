@@ -5,7 +5,6 @@ use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use snake::libs::{
     camera::CameraPlugin,
     cell::CellPlugin,
-    despawn::DespawnPlugin,
     events::EventsPlugin,
     food::FoodPlugin,
     globals::{BACKGROUND_COLOR, WINDOW_SIZE},
@@ -32,7 +31,6 @@ fn main() {
         .add_plugins(SchedulePlugin)
         .add_plugins(EventsPlugin)
         .add_plugins(CameraPlugin)
-        .add_plugins(DespawnPlugin)
         .add_plugins(CellPlugin)
         .add_plugins(FoodPlugin)
         .add_plugins(SnakePlugin);

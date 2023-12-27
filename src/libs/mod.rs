@@ -1,6 +1,5 @@
 pub mod camera;
 pub mod cell;
-pub mod despawn;
 pub mod events;
 pub mod food;
 pub mod globals;
