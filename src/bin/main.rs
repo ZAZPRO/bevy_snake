@@ -2,15 +2,13 @@
 
 use bevy::prelude::*;
 use bevy::time::common_conditions::on_timer;
-use bevy_inspector_egui::prelude::*;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use snake::libs::{
-    cell::{Cell, CellBundle},
-    globals::{
-        BACKGROUND_COLOR, FOOD_COLOR, GAME_SPEED, GRID_CENTER, GRID_SIZE, HEAD_COLOR, TAIL_COLOR,
-        WINDOW_SIZE,
-    },
+    cell::Cell,
+    food::{Food, FoodBundle},
+    globals::{BACKGROUND_COLOR, GAME_SPEED, GRID_SIZE, WINDOW_SIZE},
     input::get_user_input,
+    snake::{Direction, Head, Snake, Tail},
     utils::grid_to_screen,
 };
 
@@ -57,106 +55,8 @@ fn main() {
     app.run();
 }
 
-#[derive(Component)]
-struct Food;
-
-#[derive(Default, Reflect, InspectorOptions, PartialEq, Clone, Copy)]
-#[reflect(InspectorOptions)]
-enum Direction {
-    #[default]
-    Up,
-    Down,
-    Left,
-    Right,
-}
-
-impl Direction {
-    fn opposite(&self) -> Self {
-        match &self {
-            Direction::Up => Direction::Down,
-            Direction::Down => Direction::Up,
-            Direction::Left => Direction::Right,
-            Direction::Right => Direction::Left,
-        }
-    }
-}
-
-#[derive(Component, Reflect, InspectorOptions)]
-#[reflect(InspectorOptions)]
-struct Head {
-    direction: Direction,
-}
-
-#[derive(Component, Reflect, InspectorOptions)]
-#[reflect(InspectorOptions)]
-struct Tail;
-
-#[derive(Bundle)]
-struct HeadBundle {
-    head: Head,
-    cell: CellBundle,
-}
-
-#[derive(Resource, Default, Reflect, InspectorOptions)]
-#[reflect(Resource, InspectorOptions)]
-struct Snake {
-    parts: Vec<Entity>,
-}
-
-impl Snake {
-    fn new(commands: &mut Commands, snake: &mut ResMut<Snake>) {
-        let cell = Cell {
-            x: GRID_CENTER,
-            y: GRID_CENTER,
-        };
-
-        let id = commands
-            .spawn(CellBundle::new_with_z(cell, HEAD_COLOR, 1.))
-            .insert(Head {
-                direction: Direction::Up,
-            })
-            .id();
-        snake.parts.push(id);
-    }
-
-    fn new_tail(
-        commands: &mut Commands,
-        query: &Query<&Cell, Without<Food>>,
-        snake: &mut ResMut<Snake>,
-    ) {
-        let last_id = snake.parts.last().unwrap();
-        let last_cell = query.get(*last_id).unwrap();
-
-        let id = commands
-            .spawn(CellBundle::new(*last_cell, TAIL_COLOR))
-            .insert(Tail)
-            .id();
-        snake.parts.push(id);
-    }
-}
-
 #[derive(Event)]
 struct EatEvent;
-
-#[derive(Bundle)]
-struct FoodBundle {
-    food: Food,
-    cell: CellBundle,
-}
-
-impl FoodBundle {
-    fn new(grid_x: u32, grid_y: u32) -> Self {
-        let cell = Cell {
-            x: grid_x,
-            y: grid_y,
-        };
-
-        Self {
-            food: Food,
-            cell: CellBundle::new(cell, FOOD_COLOR),
-        }
-    }
-}
 
 fn setup(mut commands: Commands, mut snake: ResMut<Snake>) {
     commands.spawn(FoodBundle::new(4, 4));
