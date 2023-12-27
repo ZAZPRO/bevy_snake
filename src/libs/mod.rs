@@ -7,6 +7,7 @@ pub mod game_states;
 pub mod globals;
 pub mod input;
 pub mod schedule;
+pub mod score;
 pub mod snake;
 pub mod start_menu;
 pub mod utils;

@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use super::game_states::GameState;
+use super::{game_states::GameState, utils::despawn_ui};
 
 fn create_menu(mut commands: Commands) {
     commands
@@ -42,12 +42,6 @@ fn create_menu(mut commands: Commands) {
         });
 }
 
-fn despawn_menu(mut commands: Commands, query: Query<Entity, With<Node>>) {
-    for menu in query.iter() {
-        commands.entity(menu).despawn();
-    }
-}
-
 fn button_click(
     query: Query<(&Interaction,), (Changed<Interaction>, With<Button>)>,
     mut next_state: ResMut<NextState<GameState>>,
@@ -66,6 +60,6 @@ impl Plugin for StartMenuPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnEnter(GameState::StartMenu), create_menu)
             .add_systems(Update, button_click.run_if(in_state(GameState::StartMenu)))
-            .add_systems(OnExit(GameState::StartMenu), despawn_menu);
+            .add_systems(OnExit(GameState::StartMenu), despawn_ui);
     }
 }

@@ -12,7 +12,7 @@ use snake::libs::{
     globals::{BACKGROUND_COLOR, WINDOW_SIZE},
     schedule::SchedulePlugin,
     snake::SnakePlugin,
-    start_menu::StartMenuPlugin,
+    start_menu::StartMenuPlugin, score::ScorePlugin,
 };
 
 fn main() {
@@ -34,8 +34,9 @@ fn main() {
         .add_plugins(SchedulePlugin)
         .add_plugins(GameStatatesPlugin)
         .add_plugins(EventsPlugin)
-        .add_plugins(StartMenuPlugin)
         .add_plugins(CameraPlugin)
+        .add_plugins(StartMenuPlugin)
+        .add_plugins(ScorePlugin)
         .add_plugins(CellPlugin)
         .add_plugins(FoodPlugin)
         .add_plugins(SnakePlugin)
