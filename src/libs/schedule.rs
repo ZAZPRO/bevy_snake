@@ -1,5 +1,7 @@
 use bevy::prelude::*;
 
+use super::game_states::GameState;
+
 #[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
 pub enum InGameSet {
     DespawnEntities,
@@ -25,7 +27,8 @@ impl Plugin for SchedulePlugin {
                 InGameSet::GlobalPostionUpdates,
                 InGameSet::CollisionDetection,
             )
-                .chain(),
+                .chain()
+                .run_if(in_state(GameState::InGame)),
         )
         .add_systems(
             Update,

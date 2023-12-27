@@ -1,10 +1,12 @@
 pub mod camera;
 pub mod cell;
 pub mod events;
+pub mod finish_menu;
 pub mod food;
 pub mod game_states;
 pub mod globals;
 pub mod input;
 pub mod schedule;
 pub mod snake;
+pub mod start_menu;
 pub mod utils;

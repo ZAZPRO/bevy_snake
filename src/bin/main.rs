@@ -6,11 +6,13 @@ use snake::libs::{
     camera::CameraPlugin,
     cell::CellPlugin,
     events::EventsPlugin,
+    finish_menu::FinishMenuPlugin,
     food::FoodPlugin,
     game_states::GameStatatesPlugin,
     globals::{BACKGROUND_COLOR, WINDOW_SIZE},
     schedule::SchedulePlugin,
     snake::SnakePlugin,
+    start_menu::StartMenuPlugin,
 };
 
 fn main() {
@@ -32,10 +34,12 @@ fn main() {
         .add_plugins(SchedulePlugin)
         .add_plugins(GameStatatesPlugin)
         .add_plugins(EventsPlugin)
+        .add_plugins(StartMenuPlugin)
         .add_plugins(CameraPlugin)
         .add_plugins(CellPlugin)
         .add_plugins(FoodPlugin)
-        .add_plugins(SnakePlugin);
+        .add_plugins(SnakePlugin)
+        .add_plugins(FinishMenuPlugin);
 
     if cfg!(debug_assertions) {
         app.add_plugins(WorldInspectorPlugin::new());

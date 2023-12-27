@@ -3,8 +3,9 @@ use bevy_inspector_egui::{inspector_options::ReflectInspectorOptions, InspectorO
 
 use super::{
     cell::{Cell, CellBundle},
-    events::{EatEvent, SnakeSelfCollisionEvent},
+    events::EatEvent,
     food::Food,
+    game_states::GameState,
     globals::{GAME_SPEED, GRID_CENTER, GRID_SIZE, HEAD_COLOR, TAIL_COLOR},
     input::get_user_input,
     schedule::InGameSet,
@@ -179,17 +180,28 @@ fn spawn_snake(mut commands: Commands, mut snake: ResMut<Snake>) {
     Snake::new(&mut commands, &mut snake);
 }
 
-fn destroy_snake_on_snake_self_collision(
-    mut ev_snake_self_collision: EventReader<SnakeSelfCollisionEvent>,
-    mut commands: Commands,
-    mut snake: ResMut<Snake>,
-) {
-    for _ in ev_snake_self_collision.read() {
-        for part in snake.parts.iter() {
-            commands.entity(*part).despawn();
-        }
+fn destroy_snake(mut commands: Commands, mut snake: ResMut<Snake>) {
+    for part in snake.parts.iter() {
+        commands.entity(*part).despawn();
+    }
 
-        snake.parts.clear();
+    snake.parts.clear();
+}
+
+fn snake_self_collision(
+    head: Query<&Cell, With<Head>>,
+    tails: Query<&Cell, With<Tail>>,
+    mut next_state: ResMut<NextState<GameState>>,
+) {
+    // Len check is a dirty hack, but it works.
+    if tails.iter().len() > 1 {
+        if let Ok(head) = head.get_single() {
+            for tails in tails.iter() {
+                if *head == *tails {
+                    next_state.set(GameState::FinishMenu);
+                }
+            }
+        }
     }
 }
 
@@ -201,7 +213,7 @@ impl Plugin for SnakePlugin {
             .register_type::<Tail>()
             .register_type::<Snake>()
             .insert_resource(Snake::default())
-            .add_systems(Startup, spawn_snake)
+            .add_systems(OnEnter(GameState::InGame), spawn_snake)
             .add_systems(
                 Update,
                 (
@@ -214,8 +226,12 @@ impl Plugin for SnakePlugin {
             )
             .add_systems(Update, grow_snake_on_eat.in_set(InGameSet::SpawnEntities))
             .add_systems(
+                OnExit(GameState::InGame),
+                destroy_snake.in_set(InGameSet::DespawnEntities),
+            )
+            .add_systems(
                 Update,
-                destroy_snake_on_snake_self_collision.in_set(InGameSet::DespawnEntities),
+                snake_self_collision.in_set(InGameSet::CollisionDetection),
             );
     }
 }
