@@ -27,3 +27,17 @@ impl FoodBundle {
         }
     }
 }
+
+pub struct FoodPlugin;
+
+fn spawn_food(mut commands: Commands) {
+    commands.spawn(FoodBundle::new(4, 4));
+    commands.spawn(FoodBundle::new(5, 5));
+    commands.spawn(FoodBundle::new(8, 8));
+}
+
+impl Plugin for FoodPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(Startup, spawn_food);
+    }
+}

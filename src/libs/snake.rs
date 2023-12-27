@@ -1,10 +1,13 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, time::common_conditions::on_timer};
 use bevy_inspector_egui::{inspector_options::ReflectInspectorOptions, InspectorOptions};
 
 use super::{
     cell::{Cell, CellBundle},
+    events::EatEvent,
     food::Food,
-    globals::{GRID_CENTER, HEAD_COLOR, TAIL_COLOR},
+    globals::{GAME_SPEED, GRID_CENTER, GRID_SIZE, HEAD_COLOR, TAIL_COLOR},
+    input::get_user_input,
+    schedule::InGameSet,
 };
 
 #[derive(Default, Reflect, InspectorOptions, PartialEq, Clone, Copy)]
@@ -79,5 +82,122 @@ impl Snake {
             .insert(Tail)
             .id();
         snake.parts.push(id);
+    }
+}
+
+fn set_snake_direction(
+    gamepads: Res<Gamepads>,
+    keyboard_input: Res<Input<KeyCode>>,
+    button_input: Res<Input<GamepadButton>>,
+    mut query: Query<&mut Head>,
+) {
+    let user_input_state = get_user_input(gamepads, keyboard_input, button_input);
+
+    if let Ok(mut head) = query.get_single_mut() {
+        let direction: Direction = if user_input_state.input_up {
+            Direction::Up
+        } else if user_input_state.input_down {
+            Direction::Down
+        } else if user_input_state.input_left {
+            Direction::Left
+        } else if user_input_state.input_right {
+            Direction::Right
+        } else {
+            head.direction
+        };
+
+        if direction != head.direction.opposite() {
+            head.direction = direction;
+        }
+    }
+}
+
+fn move_head(mut query: Query<(&mut Cell, &Head)>) {
+    if let Ok(mut q) = query.get_single_mut() {
+        match q.1.direction {
+            Direction::Up => {
+                if q.0.y == 0 {
+                    q.0.y = GRID_SIZE - 1;
+                } else {
+                    q.0.y -= 1;
+                }
+            }
+            Direction::Down => {
+                if q.0.y == GRID_SIZE - 1 {
+                    q.0.y = 0;
+                } else {
+                    q.0.y += 1;
+                }
+            }
+            Direction::Left => {
+                if q.0.x == 0 {
+                    q.0.x = GRID_SIZE - 1;
+                } else {
+                    q.0.x -= 1;
+                }
+            }
+            Direction::Right => {
+                if q.0.x == GRID_SIZE - 1 {
+                    q.0.x = 0;
+                } else {
+                    q.0.x += 1;
+                }
+            }
+        }
+    }
+}
+
+fn move_tail(mut query: Query<(Entity, &mut Cell), Without<Food>>, snake: Res<Snake>) {
+    let mut current_snake_parts: Vec<(Entity, Cell)> = vec![];
+
+    for part in snake.parts.iter() {
+        if let Ok(e) = query.get(*part) {
+            current_snake_parts.push((e.0, *e.1));
+        }
+    }
+
+    for (i, tail_id) in snake.parts.iter().enumerate().skip(1) {
+        if let Ok(mut world_tail) = query.get_mut(*tail_id) {
+            let previous_part = current_snake_parts.get(i - 1).unwrap();
+            *world_tail.1 = previous_part.1;
+        }
+    }
+}
+
+fn grow_snake_on_eat(
+    mut ev_eat: EventReader<EatEvent>,
+    mut commands: Commands,
+    query: Query<&Cell, Without<Food>>,
+    mut snake: ResMut<Snake>,
+) {
+    for _ in ev_eat.read() {
+        Snake::new_tail(&mut commands, &query, &mut snake);
+    }
+}
+
+fn spawn_snake(mut commands: Commands, mut snake: ResMut<Snake>) {
+    Snake::new(&mut commands, &mut snake);
+}
+
+pub struct SnakePlugin;
+
+impl Plugin for SnakePlugin {
+    fn build(&self, app: &mut App) {
+        app.register_type::<Head>()
+            .register_type::<Tail>()
+            .register_type::<Snake>()
+            .insert_resource(Snake::default())
+            .add_systems(Startup, spawn_snake)
+            .add_systems(
+                Update,
+                (
+                    set_snake_direction,
+                    move_tail.run_if(on_timer(GAME_SPEED)),
+                    move_head.run_if(on_timer(GAME_SPEED)),
+                )
+                    .chain()
+                    .in_set(InGameSet::EntityUpdates),
+            )
+            .add_systems(Update, grow_snake_on_eat.in_set(InGameSet::SpawnEntities));
     }
 }
