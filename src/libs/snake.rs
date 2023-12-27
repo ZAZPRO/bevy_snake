@@ -3,7 +3,7 @@ use bevy_inspector_egui::{inspector_options::ReflectInspectorOptions, InspectorO
 
 use super::{
     cell::{Cell, CellBundle},
-    events::EatEvent,
+    events::{EatEvent, SnakeSelfCollisionEvent},
     food::Food,
     globals::{GAME_SPEED, GRID_CENTER, GRID_SIZE, HEAD_COLOR, TAIL_COLOR},
     input::get_user_input,
@@ -113,34 +113,34 @@ fn set_snake_direction(
 }
 
 fn move_head(mut query: Query<(&mut Cell, &Head)>) {
-    if let Ok(mut q) = query.get_single_mut() {
-        match q.1.direction {
+    if let Ok((mut cell, head)) = query.get_single_mut() {
+        match head.direction {
             Direction::Up => {
-                if q.0.y == 0 {
-                    q.0.y = GRID_SIZE - 1;
+                if cell.y == 0 {
+                    cell.y = GRID_SIZE - 1;
                 } else {
-                    q.0.y -= 1;
+                    cell.y -= 1;
                 }
             }
             Direction::Down => {
-                if q.0.y == GRID_SIZE - 1 {
-                    q.0.y = 0;
+                if cell.y == GRID_SIZE - 1 {
+                    cell.y = 0;
                 } else {
-                    q.0.y += 1;
+                    cell.y += 1;
                 }
             }
             Direction::Left => {
-                if q.0.x == 0 {
-                    q.0.x = GRID_SIZE - 1;
+                if cell.x == 0 {
+                    cell.x = GRID_SIZE - 1;
                 } else {
-                    q.0.x -= 1;
+                    cell.x -= 1;
                 }
             }
             Direction::Right => {
-                if q.0.x == GRID_SIZE - 1 {
-                    q.0.x = 0;
+                if cell.x == GRID_SIZE - 1 {
+                    cell.x = 0;
                 } else {
-                    q.0.x += 1;
+                    cell.x += 1;
                 }
             }
         }
@@ -179,6 +179,20 @@ fn spawn_snake(mut commands: Commands, mut snake: ResMut<Snake>) {
     Snake::new(&mut commands, &mut snake);
 }
 
+fn destroy_snake_on_snake_self_collision(
+    mut ev_snake_self_collision: EventReader<SnakeSelfCollisionEvent>,
+    mut commands: Commands,
+    mut snake: ResMut<Snake>,
+) {
+    for _ in ev_snake_self_collision.read() {
+        for part in snake.parts.iter() {
+            commands.entity(*part).despawn();
+        }
+
+        snake.parts.clear();
+    }
+}
+
 pub struct SnakePlugin;
 
 impl Plugin for SnakePlugin {
@@ -198,6 +212,10 @@ impl Plugin for SnakePlugin {
                     .chain()
                     .in_set(InGameSet::EntityUpdates),
             )
-            .add_systems(Update, grow_snake_on_eat.in_set(InGameSet::SpawnEntities));
+            .add_systems(Update, grow_snake_on_eat.in_set(InGameSet::SpawnEntities))
+            .add_systems(
+                Update,
+                destroy_snake_on_snake_self_collision.in_set(InGameSet::DespawnEntities),
+            );
     }
 }

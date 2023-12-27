@@ -3,7 +3,7 @@ use rand::Rng;
 
 use super::{
     cell::{Cell, CellBundle},
-    events::EatEvent,
+    events::{EatEvent, SnakeSelfCollisionEvent},
     globals::{FOOD_COLOR, GRID_SIZE},
     schedule::InGameSet,
 };
@@ -56,12 +56,25 @@ fn spawn_food_on_eat(mut ev_eat: EventReader<EatEvent>, mut commands: Commands) 
     }
 }
 
+fn destroy_food_on_snake_self_collision(
+    mut ev_snake_self_collision: EventReader<SnakeSelfCollisionEvent>,
+    mut commands: Commands,
+    query: Query<Entity, With<Food>>,
+) {
+    for _ in ev_snake_self_collision.read() {
+        for food in query.iter() {
+            commands.entity(food).despawn();
+        }
+    }
+}
+
 impl Plugin for FoodPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, spawn_food_randomly)
             .add_systems(
                 Update,
-                despawn_food_on_eat.in_set(InGameSet::DespawnEntities),
+                (despawn_food_on_eat, destroy_food_on_snake_self_collision)
+                    .in_set(InGameSet::DespawnEntities),
             )
             .add_systems(Update, spawn_food_on_eat.in_set(InGameSet::SpawnEntities));
     }
