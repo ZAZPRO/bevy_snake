@@ -5,9 +5,10 @@ use bevy::time::common_conditions::on_timer;
 use bevy_inspector_egui::prelude::*;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use snake::libs::{
+    cell::{Cell, CellBundle},
     globals::{
-        BACKGROUND_COLOR, FOOD_COLOR, GAME_SPEED, GRID_CELL, GRID_CENTER, GRID_SIZE, HEAD_COLOR,
-        TAIL_COLOR, WINDOW_SIZE,
+        BACKGROUND_COLOR, FOOD_COLOR, GAME_SPEED, GRID_CENTER, GRID_SIZE, HEAD_COLOR, TAIL_COLOR,
+        WINDOW_SIZE,
     },
     input::get_user_input,
     utils::grid_to_screen,
@@ -89,50 +90,6 @@ struct Head {
 #[derive(Component, Reflect, InspectorOptions)]
 #[reflect(InspectorOptions)]
 struct Tail;
-
-#[derive(Component, Clone, Copy, Default, PartialEq, Reflect, InspectorOptions)]
-#[reflect(InspectorOptions)]
-struct Cell {
-    x: u32,
-    y: u32,
-}
-
-#[derive(Bundle)]
-struct CellBundle {
-    cell: Cell,
-    sprite: SpriteBundle,
-}
-
-impl CellBundle {
-    fn new(cell: Cell, color: Color) -> Self {
-        Self::new_with_z(cell, color, 0.)
-    }
-
-    fn new_with_z(cell: Cell, color: Color, z: f32) -> Self {
-        let pos = grid_to_screen(cell.x, cell.y);
-
-        Self {
-            cell: cell,
-            sprite: SpriteBundle {
-                sprite: Sprite { color, ..default() },
-                transform: Transform {
-                    translation: Vec3 {
-                        x: pos.x,
-                        y: pos.y,
-                        z,
-                    },
-                    scale: Vec3 {
-                        x: GRID_CELL,
-                        y: GRID_CELL,
-                        ..default()
-                    },
-                    ..default()
-                },
-                ..default()
-            },
-        }
-    }
-}
 
 #[derive(Bundle)]
 struct HeadBundle {
