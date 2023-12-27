@@ -7,6 +7,7 @@ use snake::libs::{
     cell::CellPlugin,
     events::EventsPlugin,
     food::FoodPlugin,
+    game_states::GameStatatesPlugin,
     globals::{BACKGROUND_COLOR, WINDOW_SIZE},
     schedule::SchedulePlugin,
     snake::SnakePlugin,
@@ -29,6 +30,7 @@ fn main() {
             ..default()
         }))
         .add_plugins(SchedulePlugin)
+        .add_plugins(GameStatatesPlugin)
         .add_plugins(EventsPlugin)
         .add_plugins(CameraPlugin)
         .add_plugins(CellPlugin)

@@ -2,6 +2,7 @@ pub mod camera;
 pub mod cell;
 pub mod events;
 pub mod food;
+pub mod game_states;
 pub mod globals;
 pub mod input;
 pub mod schedule;
