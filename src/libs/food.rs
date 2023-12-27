@@ -31,8 +31,6 @@ impl FoodBundle {
     }
 }
 
-pub struct FoodPlugin;
-
 fn random_pos_food_bundle() -> FoodBundle {
     let x = rand::thread_rng().gen_range(0..GRID_SIZE);
     let y = rand::thread_rng().gen_range(0..GRID_SIZE);
@@ -67,6 +65,8 @@ fn destroy_food_on_snake_self_collision(
         }
     }
 }
+
+pub struct FoodPlugin;
 
 impl Plugin for FoodPlugin {
     fn build(&self, app: &mut App) {
