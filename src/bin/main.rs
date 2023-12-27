@@ -6,13 +6,12 @@ use bevy_inspector_egui::prelude::*;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use snake::libs::{
     globals::{
-        BACKGROUND_COLOR, FOOD_COLOR, GAME_SPEED, GRID_CELL, GRID_CENTER, HEAD_COLOR, TAIL_COLOR,
-        WINDOW_SIZE, GRID_SIZE,
+        BACKGROUND_COLOR, FOOD_COLOR, GAME_SPEED, GRID_CELL, GRID_CENTER, GRID_SIZE, HEAD_COLOR,
+        TAIL_COLOR, WINDOW_SIZE,
     },
+    input::get_user_input,
     utils::grid_to_screen,
 };
-// use bevy_editor_pls::prelude::*;
-// use rand::{thread_rng, Rng};
 
 fn main() {
     let mut app = App::new();
@@ -60,7 +59,7 @@ fn main() {
 #[derive(Component)]
 struct Food;
 
-#[derive(Default, Reflect, InspectorOptions, PartialEq)]
+#[derive(Default, Reflect, InspectorOptions, PartialEq, Clone, Copy)]
 #[reflect(InspectorOptions)]
 enum Direction {
     #[default]
@@ -215,55 +214,26 @@ fn setup(mut commands: Commands, mut snake: ResMut<Snake>) {
 fn set_snake_direction(
     gamepads: Res<Gamepads>,
     keyboard_input: Res<Input<KeyCode>>,
-    button_inputs: Res<Input<GamepadButton>>,
+    button_input: Res<Input<GamepadButton>>,
     mut query: Query<&mut Head>,
 ) {
-    let gamepad = gamepads.iter().last();
-
-    let gamepad_up: bool = if let Some(gamepad) = gamepad {
-        button_inputs.pressed(GamepadButton::new(gamepad, GamepadButtonType::DPadUp))
-    } else {
-        false
-    };
-    let keyboard_up = keyboard_input.pressed(KeyCode::Up) || keyboard_input.pressed(KeyCode::W);
-
-    let gamepad_down: bool = if let Some(gamepad) = gamepad {
-        button_inputs.pressed(GamepadButton::new(gamepad, GamepadButtonType::DPadDown))
-    } else {
-        false
-    };
-    let keyboard_down = keyboard_input.pressed(KeyCode::Down) || keyboard_input.pressed(KeyCode::S);
-
-    let gamepad_left: bool = if let Some(gamepad) = gamepad {
-        button_inputs.pressed(GamepadButton::new(gamepad, GamepadButtonType::DPadLeft))
-    } else {
-        false
-    };
-    let keyboard_left = keyboard_input.pressed(KeyCode::Left) || keyboard_input.pressed(KeyCode::A);
-
-    let gamepad_right: bool = if let Some(gamepad) = gamepad {
-        button_inputs.pressed(GamepadButton::new(gamepad, GamepadButtonType::DPadRight))
-    } else {
-        false
-    };
-    let keyboard_right =
-        keyboard_input.pressed(KeyCode::Right) || keyboard_input.pressed(KeyCode::D);
+    let user_input_state = get_user_input(gamepads, keyboard_input, button_input);
 
     if let Ok(mut head) = query.get_single_mut() {
-        if (keyboard_up || gamepad_up) && head.direction != Direction::Up.opposite() {
-            head.direction = Direction::Up;
-        }
+        let direction: Direction = if user_input_state.input_up {
+            Direction::Up
+        } else if user_input_state.input_down {
+            Direction::Down
+        } else if user_input_state.input_left {
+            Direction::Left
+        } else if user_input_state.input_right {
+            Direction::Right
+        } else {
+            head.direction
+        };
 
-        if (keyboard_down || gamepad_down) && head.direction != Direction::Down.opposite() {
-            head.direction = Direction::Down;
-        }
-
-        if (keyboard_left || gamepad_left) && head.direction != Direction::Left.opposite() {
-            head.direction = Direction::Left;
-        }
-
-        if (keyboard_right || gamepad_right) && head.direction != Direction::Right.opposite() {
-            head.direction = Direction::Right;
+        if direction != head.direction.opposite() {
+            head.direction = direction;
         }
     }
 }

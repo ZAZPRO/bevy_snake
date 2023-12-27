@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-#[derive(Debug, Hash, PartialEq, Eq, Clone, SystemSet)]
+#[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
 pub enum InGameSet {
     DespawnEntities,
     UserInput,
