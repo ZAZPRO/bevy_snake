@@ -2,7 +2,9 @@
 
 use bevy::prelude::*;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
+use bevy_particle_systems::ParticleSystemPlugin;
 use snake::libs::{
+    audio::AudioPlugin,
     camera::CameraPlugin,
     cell::CellPlugin,
     events::EventsPlugin,
@@ -10,9 +12,11 @@ use snake::libs::{
     food::FoodPlugin,
     game_states::GameStatatesPlugin,
     globals::{BACKGROUND_COLOR, WINDOW_SIZE},
+    particles::ParticlePlugin,
     schedule::SchedulePlugin,
+    score::ScorePlugin,
     snake::SnakePlugin,
-    start_menu::StartMenuPlugin, score::ScorePlugin,
+    start_menu::StartMenuPlugin,
 };
 
 fn main() {
@@ -34,12 +38,15 @@ fn main() {
         .add_plugins(SchedulePlugin)
         .add_plugins(GameStatatesPlugin)
         .add_plugins(EventsPlugin)
+        .add_plugins(AudioPlugin)
+        .add_plugins(ParticleSystemPlugin)
         .add_plugins(CameraPlugin)
         .add_plugins(StartMenuPlugin)
         .add_plugins(ScorePlugin)
         .add_plugins(CellPlugin)
         .add_plugins(FoodPlugin)
         .add_plugins(SnakePlugin)
+        .add_plugins(ParticlePlugin)
         .add_plugins(FinishMenuPlugin);
 
     if cfg!(debug_assertions) {

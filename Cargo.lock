@@ -864,6 +864,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "bevy_particle_systems"
+version = "0.11.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "206c60fa2cf1a34e321be26de6fecfc708551460feffd2a41845c293bd42895f"
+dependencies = [
+ "bevy_app",
+ "bevy_asset",
+ "bevy_ecs",
+ "bevy_hierarchy",
+ "bevy_math",
+ "bevy_reflect",
+ "bevy_render",
+ "bevy_sprite",
+ "bevy_time",
+ "bevy_transform",
+ "rand",
+]
+
+[[package]]
 name = "bevy_pbr"
 version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3417,6 +3436,7 @@ dependencies = [
  "bevy",
  "bevy-inspector-egui",
  "bevy_editor_pls",
+ "bevy_particle_systems",
  "rand",
 ]
 

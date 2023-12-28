@@ -1,7 +1,12 @@
-use bevy::{prelude::*, time::common_conditions::on_timer};
+use bevy::{
+    audio::{Volume, VolumeLevel},
+    prelude::*,
+    time::common_conditions::on_timer,
+};
 use bevy_inspector_egui::{inspector_options::ReflectInspectorOptions, InspectorOptions};
 
 use super::{
+    audio::AudioAssets,
     cell::{Cell, CellBundle},
     events::EatEvent,
     food::Food,
@@ -113,7 +118,11 @@ fn set_snake_direction(
     }
 }
 
-fn move_head(mut query: Query<(&mut Cell, &Head)>) {
+fn move_head(
+    mut commands: Commands,
+    mut query: Query<(&mut Cell, &Head)>,
+    audio: Res<AudioAssets>,
+) {
     if let Ok((mut cell, head)) = query.get_single_mut() {
         match head.direction {
             Direction::Up => {
@@ -146,6 +155,14 @@ fn move_head(mut query: Query<(&mut Cell, &Head)>) {
             }
         }
     }
+
+    commands.spawn(AudioBundle {
+        source: audio.snake_movement_sound.clone(),
+        settings: PlaybackSettings {
+            volume: Volume::Relative(VolumeLevel::new(0.3)),
+            ..default()
+        },
+    });
 }
 
 fn move_tail(mut query: Query<(Entity, &mut Cell), Without<Food>>, snake: Res<Snake>) {
@@ -170,9 +187,14 @@ fn grow_snake_on_eat(
     mut commands: Commands,
     query: Query<&Cell, Without<Food>>,
     mut snake: ResMut<Snake>,
+    audio: Res<AudioAssets>,
 ) {
     for _ in ev_eat.read() {
         Snake::new_tail(&mut commands, &query, &mut snake);
+        commands.spawn(AudioBundle {
+            source: audio.eat_sound.clone(),
+            ..default()
+        });
     }
 }
 

@@ -45,7 +45,7 @@ fn spawn_food_randomly(mut commands: Commands) {
 
 fn despawn_food_on_eat(mut ev_eat: EventReader<EatEvent>, mut commands: Commands) {
     for ev in ev_eat.read() {
-        commands.entity(ev.0).despawn();
+        commands.entity(ev.id).despawn();
     }
 }
 
