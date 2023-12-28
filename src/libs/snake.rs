@@ -40,6 +40,7 @@ impl Direction {
 #[derive(Component, Reflect, InspectorOptions)]
 #[reflect(InspectorOptions)]
 pub struct Head {
+    pub planned_direction: Direction,
     pub direction: Direction,
 }
 
@@ -69,6 +70,7 @@ impl Snake {
         let id = commands
             .spawn(CellBundle::new_with_z(cell, HEAD_COLOR, 1.))
             .insert(Head {
+                planned_direction: Direction::Up,
                 direction: Direction::Up,
             })
             .id();
@@ -109,21 +111,23 @@ fn set_snake_direction(
         } else if user_input_state.input_right {
             Direction::Right
         } else {
-            head.direction
+            head.planned_direction
         };
 
-        if direction != head.direction.opposite() {
-            head.direction = direction;
-        }
+        head.planned_direction = direction;
     }
 }
 
 fn move_head(
     mut commands: Commands,
-    mut query: Query<(&mut Cell, &Head)>,
+    mut query: Query<(&mut Cell, &mut Head)>,
     audio: Res<AudioAssets>,
 ) {
-    if let Ok((mut cell, head)) = query.get_single_mut() {
+    if let Ok((mut cell, mut head)) = query.get_single_mut() {
+        if head.direction != head.planned_direction.opposite() {
+            head.direction = head.planned_direction;
+        }
+
         match head.direction {
             Direction::Up => {
                 if cell.y == 0 {
