@@ -63,9 +63,8 @@ fn button_click(
     mut next_state: ResMut<NextState<GameState>>,
 ) {
     for (interaction,) in query.iter() {
-        match &interaction {
-            Interaction::Pressed => next_state.set(GameState::StartMenu),
-            _ => {}
+        if interaction == &Interaction::Pressed {
+            next_state.set(GameState::StartMenu);
         }
     }
 }

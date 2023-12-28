@@ -30,7 +30,7 @@ impl CellBundle {
         let pos = grid_to_screen(cell.x, cell.y);
 
         Self {
-            cell: cell,
+            cell,
             sprite: SpriteBundle {
                 sprite: Sprite { color, ..default() },
                 transform: Transform {

@@ -60,7 +60,7 @@ pub struct Snake {
 }
 
 impl Snake {
-    pub fn new(commands: &mut Commands, snake: &mut ResMut<Snake>) {
+    pub fn create(commands: &mut Commands, snake: &mut ResMut<Snake>) {
         let cell = Cell {
             x: GRID_CENTER,
             y: GRID_CENTER,
@@ -199,7 +199,7 @@ fn grow_snake_on_eat(
 }
 
 fn spawn_snake(mut commands: Commands, mut snake: ResMut<Snake>) {
-    Snake::new(&mut commands, &mut snake);
+    Snake::create(&mut commands, &mut snake);
 }
 
 fn destroy_snake(mut commands: Commands, mut snake: ResMut<Snake>) {
