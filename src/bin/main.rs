@@ -7,7 +7,6 @@ use snake::libs::{
     camera::CameraPlugin,
     cell::CellPlugin,
     events::EventsPlugin,
-    finish_menu::FinishMenuPlugin,
     food::FoodPlugin,
     game_configuration::GameConfigurationPlugin,
     game_states::GameStatatesPlugin,
@@ -16,7 +15,7 @@ use snake::libs::{
     schedule::SchedulePlugin,
     score::ScorePlugin,
     snake::SnakePlugin,
-    start_menu::StartMenuPlugin,
+    ui::{finish_menu::FinishMenuPlugin, start_menu::StartMenuPlugin},
 };
 
 fn main() {
@@ -56,7 +55,7 @@ fn main() {
         use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
         app.add_plugins(WorldInspectorPlugin::new());
-        app.add_plugins(FrameTimeDiagnosticsPlugin::default());
+        // app.add_plugins(FrameTimeDiagnosticsPlugin::default());
         app.add_plugins(LogDiagnosticsPlugin::default());
     }
 

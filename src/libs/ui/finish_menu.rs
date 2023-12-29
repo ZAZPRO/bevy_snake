@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 
-use super::{game_states::GameState, utils::despawn_ui};
+use crate::libs::{game_states::GameState, score::Score, utils::despawn_ui};
 
-fn create_menu(mut commands: Commands) {
+fn create_menu(mut commands: Commands, score: ResMut<Score>) {
     commands
         .spawn(NodeBundle {
             style: Style {
@@ -10,19 +10,35 @@ fn create_menu(mut commands: Commands) {
                 height: Val::Percent(100.0),
                 align_items: AlignItems::Center,
                 justify_content: JustifyContent::Center,
+                flex_direction: FlexDirection::Column,
                 ..default()
             },
             ..default()
         })
         .with_children(|parent| {
+            parent.spawn(TextBundle::from_section(
+                format!("Your score: {}", score.0),
+                TextStyle {
+                    font_size: 80.0,
+                    color: Color::rgb(0.9, 0.9, 0.9),
+                    ..default()
+                },
+            ));
+
             parent
                 .spawn(ButtonBundle {
                     style: Style {
-                        width: Val::Px(150.0),
+                        width: Val::Px(300.0),
                         height: Val::Px(65.0),
                         border: UiRect::all(Val::Px(5.0)),
                         justify_content: JustifyContent::Center,
                         align_items: AlignItems::Center,
+                        margin: UiRect {
+                            left: Val::Percent(10.),
+                            right: Val::Percent(10.),
+                            top: Val::Percent(10.),
+                            bottom: Val::Percent(10.),
+                        },
                         ..default()
                     },
                     border_color: BorderColor(Color::BLACK),
@@ -31,7 +47,7 @@ fn create_menu(mut commands: Commands) {
                 })
                 .with_children(|parent| {
                     parent.spawn(TextBundle::from_section(
-                        "Start",
+                        "Main menu",
                         TextStyle {
                             font_size: 40.0,
                             color: Color::rgb(0.9, 0.9, 0.9),
@@ -48,17 +64,17 @@ fn button_click(
 ) {
     for (interaction,) in query.iter() {
         if interaction == &Interaction::Pressed {
-            next_state.set(GameState::InGame);
+            next_state.set(GameState::StartMenu);
         }
     }
 }
 
-pub struct StartMenuPlugin;
+pub struct FinishMenuPlugin;
 
-impl Plugin for StartMenuPlugin {
+impl Plugin for FinishMenuPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(GameState::StartMenu), create_menu)
-            .add_systems(Update, button_click.run_if(in_state(GameState::StartMenu)))
-            .add_systems(OnExit(GameState::StartMenu), despawn_ui);
+        app.add_systems(OnEnter(GameState::FinishMenu), create_menu)
+            .add_systems(Update, button_click.run_if(in_state(GameState::FinishMenu)))
+            .add_systems(OnExit(GameState::FinishMenu), despawn_ui);
     }
 }
