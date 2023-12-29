@@ -1,7 +1,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use bevy::prelude::*;
-use bevy_inspector_egui::quick::WorldInspectorPlugin;
+use bevy::{prelude::*, window::PresentMode};
 use bevy_particle_systems::ParticleSystemPlugin;
 use snake::libs::{
     audio::AudioPlugin,
@@ -31,6 +30,7 @@ fn main() {
                     ..Default::default()
                 },
                 resizable: false,
+                present_mode: PresentMode::AutoVsync,
                 ..default()
             }),
             ..default()
@@ -50,7 +50,12 @@ fn main() {
         .add_plugins(FinishMenuPlugin);
 
     if cfg!(debug_assertions) {
+        use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
+        use bevy_inspector_egui::quick::WorldInspectorPlugin;
+
         app.add_plugins(WorldInspectorPlugin::new());
+        app.add_plugins(FrameTimeDiagnosticsPlugin::default());
+        app.add_plugins(LogDiagnosticsPlugin::default());
     }
 
     app.run();
