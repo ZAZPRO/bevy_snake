@@ -21,6 +21,5 @@ opt-level = 1
 opt-level = 3
 
 [profile.release]
-opt-level = 'z'
 lto = "thin"
 codegen-units = 1
