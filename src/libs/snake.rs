@@ -134,7 +134,6 @@ fn move_head(
     audio: Res<AudioAssets>,
 ) {
     if let Ok((mut cell, mut head)) = query.get_single_mut() {
-        dbg!(head.planned_direction.clone());
         let planned_direction = head.planned_direction.pop_front();
 
         if let Some(plan_dir) = planned_direction {
