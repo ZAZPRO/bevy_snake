@@ -51,11 +51,10 @@ fn main() {
         .add_plugins(FinishMenuPlugin);
 
     if cfg!(debug_assertions) {
-        use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
+        use bevy::diagnostic::LogDiagnosticsPlugin;
         use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
         app.add_plugins(WorldInspectorPlugin::new());
-        // app.add_plugins(FrameTimeDiagnosticsPlugin::default());
         app.add_plugins(LogDiagnosticsPlugin::default());
     }
 
