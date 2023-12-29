@@ -3,7 +3,11 @@ use std::time::Duration;
 use bevy::prelude::*;
 use bevy_inspector_egui::{inspector_options::ReflectInspectorOptions, InspectorOptions};
 
-use super::{globals::BASE_GAME_SPEED, schedule::InGameSet};
+use super::{
+    cell::Cell,
+    globals::{BASE_GAME_SPEED, GRID_SIZE},
+    schedule::InGameSet,
+};
 
 #[derive(Default)]
 pub enum GameDifficulty {
@@ -29,12 +33,22 @@ impl GameDifficulty {
 #[reflect(Resource, InspectorOptions)]
 pub struct GameConfiguration {
     pub tick_timer: Timer,
+    pub field: Vec<Cell>,
 }
 
 impl GameConfiguration {
     pub fn new(difficulty: GameDifficulty) -> Self {
+        let mut field: Vec<Cell> = Vec::with_capacity((GRID_SIZE * GRID_SIZE) as usize);
+
+        for y in 0..GRID_SIZE {
+            for x in 0..GRID_SIZE {
+                field.push(Cell { x, y });
+            }
+        }
+
         Self {
             tick_timer: Timer::from_seconds(difficulty.get_tick_rate(), TimerMode::Repeating),
+            field,
         }
     }
 
