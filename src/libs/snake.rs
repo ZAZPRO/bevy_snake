@@ -1,5 +1,7 @@
+use std::collections::VecDeque;
+
 use bevy::{
-    audio::{Volume, VolumeLevel},
+    audio::{PlaybackMode, Volume, VolumeLevel},
     prelude::*,
     time::common_conditions::on_timer,
 };
@@ -16,7 +18,7 @@ use super::{
     schedule::InGameSet,
 };
 
-#[derive(Default, Reflect, InspectorOptions, PartialEq, Clone, Copy)]
+#[derive(Default, Reflect, InspectorOptions, PartialEq, Clone, Copy, Debug)]
 #[reflect(InspectorOptions)]
 pub enum Direction {
     #[default]
@@ -37,10 +39,10 @@ impl Direction {
     }
 }
 
-#[derive(Component, Reflect, InspectorOptions)]
+#[derive(Component, Reflect, InspectorOptions, Debug)]
 #[reflect(InspectorOptions)]
 pub struct Head {
-    pub planned_direction: Direction,
+    pub planned_direction: VecDeque<Direction>,
     pub direction: Direction,
 }
 
@@ -70,7 +72,7 @@ impl Snake {
         let id = commands
             .spawn(CellBundle::new_with_z(cell, HEAD_COLOR, 1.))
             .insert(Head {
-                planned_direction: Direction::Up,
+                planned_direction: VecDeque::new(),
                 direction: Direction::Up,
             })
             .id();
@@ -102,19 +104,27 @@ fn set_snake_direction(
     let user_input_state = get_user_input(gamepads, keyboard_input, button_input);
 
     if let Ok(mut head) = query.get_single_mut() {
-        let direction: Direction = if user_input_state.input_up {
-            Direction::Up
+        let direction: Option<Direction> = if user_input_state.input_up {
+            Some(Direction::Up)
         } else if user_input_state.input_down {
-            Direction::Down
+            Some(Direction::Down)
         } else if user_input_state.input_left {
-            Direction::Left
+            Some(Direction::Left)
         } else if user_input_state.input_right {
-            Direction::Right
+            Some(Direction::Right)
         } else {
-            head.planned_direction
+            None
         };
 
-        head.planned_direction = direction;
+        if let Some(dir) = direction {
+            if let Some(last_dir) = head.planned_direction.back() {
+                if *last_dir != dir {
+                    head.planned_direction.push_back(dir);
+                }
+            } else {
+                head.planned_direction.push_back(dir);
+            }
+        }
     }
 }
 
@@ -124,8 +134,15 @@ fn move_head(
     audio: Res<AudioAssets>,
 ) {
     if let Ok((mut cell, mut head)) = query.get_single_mut() {
-        if head.direction != head.planned_direction.opposite() {
-            head.direction = head.planned_direction;
+        dbg!(head.planned_direction.clone());
+        let planned_direction = head.planned_direction.pop_front();
+
+        if let Some(plan_dir) = planned_direction {
+            if head.direction != plan_dir.opposite() {
+                head.direction = plan_dir;
+            } else {
+                head.planned_direction.clear();
+            }
         }
 
         match head.direction {
@@ -164,6 +181,7 @@ fn move_head(
         source: audio.snake_movement_sound.clone(),
         settings: PlaybackSettings {
             volume: Volume::Relative(VolumeLevel::new(0.3)),
+            mode: PlaybackMode::Despawn,
             ..default()
         },
     });
@@ -195,8 +213,13 @@ fn grow_snake_on_eat(
 ) {
     for _ in ev_eat.read() {
         Snake::new_tail(&mut commands, &query, &mut snake);
+
         commands.spawn(AudioBundle {
             source: audio.eat_sound.clone(),
+            settings: PlaybackSettings {
+                mode: PlaybackMode::Despawn,
+                ..default()
+            },
             ..default()
         });
     }
