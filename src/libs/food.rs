@@ -18,6 +18,7 @@ pub struct FoodBundle {
     pub food: Food,
     pub cell: CellBundle,
     pub animation: AnimationPlayer,
+    pub name: Name,
 }
 
 impl FoodBundle {
@@ -33,6 +34,7 @@ impl FoodBundle {
         Self {
             food: Food,
             cell: CellBundle::new(cell, FOOD_COLOR),
+            name: Name::new(BREATHE_ANIMATION_NAME),
             animation: player,
         }
     }
@@ -46,10 +48,7 @@ fn random_pos_food_bundle(animation: Handle<AnimationClip>) -> FoodBundle {
 }
 
 fn spawn_food_randomly(mut commands: Commands, animation_handles: Res<AnimationHandles>) {
-    commands.spawn((
-        random_pos_food_bundle(animation_handles.breathe.clone()),
-        Name::new(BREATHE_ANIMATION_NAME),
-    ));
+    commands.spawn(random_pos_food_bundle(animation_handles.breathe.clone()));
 }
 
 fn despawn_food_on_eat(mut ev_eat: EventReader<EatEvent>, mut commands: Commands) {
@@ -64,10 +63,7 @@ fn spawn_food_on_eat(
     animation_handles: Res<AnimationHandles>,
 ) {
     for _ in ev_eat.read() {
-        commands.spawn((
-            random_pos_food_bundle(animation_handles.breathe.clone()),
-            Name::new(BREATHE_ANIMATION_NAME),
-        ));
+        commands.spawn(random_pos_food_bundle(animation_handles.breathe.clone()));
     }
 }
 
