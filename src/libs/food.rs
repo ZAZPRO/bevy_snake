@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use rand::Rng;
 
 use super::{
+    animation::{AnimationHandles, BREATHE_ANIMATION_NAME},
     cell::{Cell, CellBundle},
     events::EatEvent,
     game_states::GameState,
@@ -16,31 +17,39 @@ pub struct Food;
 pub struct FoodBundle {
     pub food: Food,
     pub cell: CellBundle,
+    pub animation: AnimationPlayer,
 }
 
 impl FoodBundle {
-    pub fn new(grid_x: u32, grid_y: u32) -> Self {
+    pub fn new(grid_x: u32, grid_y: u32, animation: Handle<AnimationClip>) -> Self {
         let cell = Cell {
             x: grid_x,
             y: grid_y,
         };
 
+        let mut player = AnimationPlayer::default();
+        player.play(animation).repeat();
+
         Self {
             food: Food,
             cell: CellBundle::new(cell, FOOD_COLOR),
+            animation: player,
         }
     }
 }
 
-fn random_pos_food_bundle() -> FoodBundle {
+fn random_pos_food_bundle(animation: Handle<AnimationClip>) -> FoodBundle {
     let x = rand::thread_rng().gen_range(0..GRID_SIZE);
     let y = rand::thread_rng().gen_range(0..GRID_SIZE);
 
-    FoodBundle::new(x, y)
+    FoodBundle::new(x, y, animation)
 }
 
-fn spawn_food_randomly(mut commands: Commands) {
-    commands.spawn(random_pos_food_bundle());
+fn spawn_food_randomly(mut commands: Commands, animation_handles: Res<AnimationHandles>) {
+    commands.spawn((
+        random_pos_food_bundle(animation_handles.breathe.clone()),
+        Name::new(BREATHE_ANIMATION_NAME),
+    ));
 }
 
 fn despawn_food_on_eat(mut ev_eat: EventReader<EatEvent>, mut commands: Commands) {
@@ -49,9 +58,16 @@ fn despawn_food_on_eat(mut ev_eat: EventReader<EatEvent>, mut commands: Commands
     }
 }
 
-fn spawn_food_on_eat(mut ev_eat: EventReader<EatEvent>, mut commands: Commands) {
+fn spawn_food_on_eat(
+    mut ev_eat: EventReader<EatEvent>,
+    mut commands: Commands,
+    animation_handles: Res<AnimationHandles>,
+) {
     for _ in ev_eat.read() {
-        commands.spawn(random_pos_food_bundle());
+        commands.spawn((
+            random_pos_food_bundle(animation_handles.breathe.clone()),
+            Name::new(BREATHE_ANIMATION_NAME),
+        ));
     }
 }
 

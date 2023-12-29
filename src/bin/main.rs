@@ -15,7 +15,7 @@ use snake::libs::{
     schedule::SchedulePlugin,
     score::ScorePlugin,
     snake::SnakePlugin,
-    ui::{finish_menu::FinishMenuPlugin, start_menu::StartMenuPlugin},
+    ui::{finish_menu::FinishMenuPlugin, start_menu::StartMenuPlugin}, animation::CustomAnimationPlugin,
 };
 
 fn main() {
@@ -41,6 +41,7 @@ fn main() {
         .add_plugins(AudioPlugin)
         .add_plugins(ParticleSystemPlugin)
         .add_plugins(GameConfigurationPlugin)
+        .add_plugins(CustomAnimationPlugin)
         .add_plugins(CameraPlugin)
         .add_plugins(StartMenuPlugin)
         .add_plugins(ScorePlugin)
