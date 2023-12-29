@@ -4,6 +4,7 @@ pub mod cell;
 pub mod events;
 pub mod finish_menu;
 pub mod food;
+pub mod game_configuration;
 pub mod game_states;
 pub mod globals;
 pub mod input;

@@ -3,7 +3,6 @@ use std::collections::VecDeque;
 use bevy::{
     audio::{PlaybackMode, Volume, VolumeLevel},
     prelude::*,
-    time::common_conditions::on_timer,
 };
 use bevy_inspector_egui::{inspector_options::ReflectInspectorOptions, InspectorOptions};
 
@@ -12,8 +11,9 @@ use super::{
     cell::{Cell, CellBundle},
     events::EatEvent,
     food::Food,
+    game_configuration::GameConfiguration,
     game_states::GameState,
-    globals::{GAME_SPEED, GRID_CENTER, GRID_SIZE, HEAD_COLOR, TAIL_COLOR},
+    globals::{GRID_CENTER, GRID_SIZE, HEAD_COLOR, TAIL_COLOR},
     input::get_user_input,
     schedule::InGameSet,
 };
@@ -132,73 +132,82 @@ fn move_head(
     mut commands: Commands,
     mut query: Query<(&mut Cell, &mut Head)>,
     audio: Res<AudioAssets>,
+    game_configration: Res<GameConfiguration>,
 ) {
-    if let Ok((mut cell, mut head)) = query.get_single_mut() {
-        let planned_direction = head.planned_direction.pop_front();
+    if game_configration.tick_timer.just_finished() {
+        if let Ok((mut cell, mut head)) = query.get_single_mut() {
+            let planned_direction = head.planned_direction.pop_front();
 
-        if let Some(plan_dir) = planned_direction {
-            if head.direction != plan_dir.opposite() {
-                head.direction = plan_dir;
-            } else {
-                head.planned_direction.clear();
+            if let Some(plan_dir) = planned_direction {
+                if head.direction != plan_dir.opposite() {
+                    head.direction = plan_dir;
+                } else {
+                    head.planned_direction.clear();
+                }
+            }
+
+            match head.direction {
+                Direction::Up => {
+                    if cell.y == 0 {
+                        cell.y = GRID_SIZE - 1;
+                    } else {
+                        cell.y -= 1;
+                    }
+                }
+                Direction::Down => {
+                    if cell.y == GRID_SIZE - 1 {
+                        cell.y = 0;
+                    } else {
+                        cell.y += 1;
+                    }
+                }
+                Direction::Left => {
+                    if cell.x == 0 {
+                        cell.x = GRID_SIZE - 1;
+                    } else {
+                        cell.x -= 1;
+                    }
+                }
+                Direction::Right => {
+                    if cell.x == GRID_SIZE - 1 {
+                        cell.x = 0;
+                    } else {
+                        cell.x += 1;
+                    }
+                }
             }
         }
 
-        match head.direction {
-            Direction::Up => {
-                if cell.y == 0 {
-                    cell.y = GRID_SIZE - 1;
-                } else {
-                    cell.y -= 1;
-                }
-            }
-            Direction::Down => {
-                if cell.y == GRID_SIZE - 1 {
-                    cell.y = 0;
-                } else {
-                    cell.y += 1;
-                }
-            }
-            Direction::Left => {
-                if cell.x == 0 {
-                    cell.x = GRID_SIZE - 1;
-                } else {
-                    cell.x -= 1;
-                }
-            }
-            Direction::Right => {
-                if cell.x == GRID_SIZE - 1 {
-                    cell.x = 0;
-                } else {
-                    cell.x += 1;
-                }
-            }
-        }
+        commands.spawn(AudioBundle {
+            source: audio.snake_movement_sound.clone(),
+            settings: PlaybackSettings {
+                volume: Volume::Relative(VolumeLevel::new(0.3)),
+                mode: PlaybackMode::Despawn,
+                ..default()
+            },
+        });
     }
-
-    commands.spawn(AudioBundle {
-        source: audio.snake_movement_sound.clone(),
-        settings: PlaybackSettings {
-            volume: Volume::Relative(VolumeLevel::new(0.3)),
-            mode: PlaybackMode::Despawn,
-            ..default()
-        },
-    });
 }
 
-fn move_tail(mut query: Query<(Entity, &mut Cell), Without<Food>>, snake: Res<Snake>) {
-    let mut current_snake_parts: Vec<(Entity, Cell)> = vec![];
+fn move_tail(
+    mut query: Query<(Entity, &mut Cell), Without<Food>>,
+    snake: Res<Snake>,
+    game_configration: Res<GameConfiguration>,
+) {
+    if game_configration.tick_timer.just_finished() {
+        let mut current_snake_parts: Vec<(Entity, Cell)> = vec![];
 
-    for part in snake.parts.iter() {
-        if let Ok(e) = query.get(*part) {
-            current_snake_parts.push((e.0, *e.1));
+        for part in snake.parts.iter() {
+            if let Ok(e) = query.get(*part) {
+                current_snake_parts.push((e.0, *e.1));
+            }
         }
-    }
 
-    for (i, tail_id) in snake.parts.iter().enumerate().skip(1) {
-        if let Ok(mut world_tail) = query.get_mut(*tail_id) {
-            let previous_part = current_snake_parts.get(i - 1).unwrap();
-            *world_tail.1 = previous_part.1;
+        for (i, tail_id) in snake.parts.iter().enumerate().skip(1) {
+            if let Ok(mut world_tail) = query.get_mut(*tail_id) {
+                let previous_part = current_snake_parts.get(i - 1).unwrap();
+                *world_tail.1 = previous_part.1;
+            }
         }
     }
 }
@@ -264,11 +273,7 @@ impl Plugin for SnakePlugin {
             .add_systems(OnEnter(GameState::InGame), spawn_snake)
             .add_systems(
                 Update,
-                (
-                    set_snake_direction,
-                    move_tail.run_if(on_timer(GAME_SPEED)),
-                    move_head.run_if(on_timer(GAME_SPEED)),
-                )
+                (set_snake_direction, move_tail, move_head)
                     .chain()
                     .in_set(InGameSet::EntityUpdates),
             )

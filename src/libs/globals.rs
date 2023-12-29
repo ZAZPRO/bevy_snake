@@ -1,5 +1,3 @@
-use std::time::Duration;
-
 use bevy::render::color::Color;
 
 pub const GRID_CELL: f32 = 60.0;
@@ -16,4 +14,4 @@ pub const FOOD_COLOR: Color = Color::rgb(0.9, 0.1, 0.1);
 pub const HEAD_COLOR: Color = Color::rgb(0.9, 0.9, 0.9);
 pub const TAIL_COLOR: Color = Color::rgb(0.15, 0.79, 0.58);
 
-pub const GAME_SPEED: Duration = Duration::from_millis(500);
+pub const GAME_SPEED: f32 = 0.5;

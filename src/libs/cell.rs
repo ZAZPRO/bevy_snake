@@ -1,10 +1,8 @@
-use bevy::{prelude::*, time::common_conditions::on_timer};
+use bevy::prelude::*;
 use bevy_inspector_egui::{inspector_options::ReflectInspectorOptions, InspectorOptions};
 
 use super::{
-    food::Food,
-    globals::{GAME_SPEED, GRID_CELL},
-    schedule::InGameSet,
+    food::Food, game_configuration::GameConfiguration, globals::GRID_CELL, schedule::InGameSet,
     utils::grid_to_screen,
 };
 
@@ -52,15 +50,20 @@ impl CellBundle {
     }
 }
 
-fn update_cells_positions(mut query: Query<(&Cell, &mut Transform), Without<Food>>) {
-    for (cell, mut transform) in query.iter_mut() {
-        let new_pos = grid_to_screen(cell.x, cell.y);
+fn update_cells_positions(
+    mut query: Query<(&Cell, &mut Transform), Without<Food>>,
+    game_configration: Res<GameConfiguration>,
+) {
+    if game_configration.tick_timer.just_finished() {
+        for (cell, mut transform) in query.iter_mut() {
+            let new_pos = grid_to_screen(cell.x, cell.y);
 
-        transform.translation = Vec3 {
-            x: new_pos.x,
-            y: new_pos.y,
-            z: transform.translation.z,
-        };
+            transform.translation = Vec3 {
+                x: new_pos.x,
+                y: new_pos.y,
+                z: transform.translation.z,
+            };
+        }
     }
 }
 
@@ -70,9 +73,7 @@ impl Plugin for CellPlugin {
     fn build(&self, app: &mut App) {
         app.register_type::<Cell>().add_systems(
             Update,
-            update_cells_positions
-                .run_if(on_timer(GAME_SPEED))
-                .in_set(InGameSet::GlobalPostionUpdates),
+            update_cells_positions.in_set(InGameSet::GlobalPostionUpdates),
         );
     }
 }

@@ -9,6 +9,7 @@ use snake::libs::{
     events::EventsPlugin,
     finish_menu::FinishMenuPlugin,
     food::FoodPlugin,
+    game_configuration::GameConfigurationPlugin,
     game_states::GameStatatesPlugin,
     globals::{BACKGROUND_COLOR, WINDOW_SIZE},
     particles::ParticlePlugin,
@@ -40,6 +41,7 @@ fn main() {
         .add_plugins(EventsPlugin)
         .add_plugins(AudioPlugin)
         .add_plugins(ParticleSystemPlugin)
+        .add_plugins(GameConfigurationPlugin)
         .add_plugins(CameraPlugin)
         .add_plugins(StartMenuPlugin)
         .add_plugins(ScorePlugin)
