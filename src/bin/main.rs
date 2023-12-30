@@ -3,6 +3,7 @@
 use bevy::{prelude::*, window::PresentMode};
 use bevy_particle_systems::ParticleSystemPlugin;
 use snake::libs::{
+    animation::CustomAnimationPlugin,
     audio::AudioPlugin,
     camera::CameraPlugin,
     cell::CellPlugin,
@@ -12,10 +13,11 @@ use snake::libs::{
     game_states::GameStatatesPlugin,
     globals::{BACKGROUND_COLOR, WINDOW_SIZE},
     particles::ParticlePlugin,
+    pause::PausePlugin,
     schedule::SchedulePlugin,
     score::ScorePlugin,
     snake::SnakePlugin,
-    ui::{finish_menu::FinishMenuPlugin, start_menu::StartMenuPlugin}, animation::CustomAnimationPlugin,
+    ui::{finish_menu::FinishMenuPlugin, start_menu::StartMenuPlugin},
 };
 
 fn main() {
@@ -42,6 +44,7 @@ fn main() {
         .add_plugins(ParticleSystemPlugin)
         .add_plugins(GameConfigurationPlugin)
         .add_plugins(CustomAnimationPlugin)
+        .add_plugins(PausePlugin)
         .add_plugins(CameraPlugin)
         .add_plugins(StartMenuPlugin)
         .add_plugins(ScorePlugin)

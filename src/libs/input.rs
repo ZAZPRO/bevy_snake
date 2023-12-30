@@ -1,10 +1,11 @@
 use bevy::prelude::*;
 
 pub struct InputState {
-    pub input_up: bool,
-    pub input_down: bool,
-    pub input_left: bool,
-    pub input_right: bool,
+    pub action_up: bool,
+    pub action_down: bool,
+    pub action_left: bool,
+    pub action_right: bool,
+    pub action_pause: bool,
 }
 
 pub fn get_user_input(
@@ -19,21 +20,24 @@ pub fn get_user_input(
     } else {
         false
     };
-    let keyboard_up = keyboard_input.just_pressed(KeyCode::Up) || keyboard_input.just_pressed(KeyCode::W);
+    let keyboard_up =
+        keyboard_input.just_pressed(KeyCode::Up) || keyboard_input.just_pressed(KeyCode::W);
 
     let gamepad_down: bool = if let Some(gamepad) = gamepad {
         button_inputs.just_pressed(GamepadButton::new(gamepad, GamepadButtonType::DPadDown))
     } else {
         false
     };
-    let keyboard_down = keyboard_input.just_pressed(KeyCode::Down) || keyboard_input.just_pressed(KeyCode::S);
+    let keyboard_down =
+        keyboard_input.just_pressed(KeyCode::Down) || keyboard_input.just_pressed(KeyCode::S);
 
     let gamepad_left: bool = if let Some(gamepad) = gamepad {
         button_inputs.just_pressed(GamepadButton::new(gamepad, GamepadButtonType::DPadLeft))
     } else {
         false
     };
-    let keyboard_left = keyboard_input.just_pressed(KeyCode::Left) || keyboard_input.just_pressed(KeyCode::A);
+    let keyboard_left =
+        keyboard_input.just_pressed(KeyCode::Left) || keyboard_input.just_pressed(KeyCode::A);
 
     let gamepad_right: bool = if let Some(gamepad) = gamepad {
         button_inputs.just_pressed(GamepadButton::new(gamepad, GamepadButtonType::DPadRight))
@@ -43,10 +47,18 @@ pub fn get_user_input(
     let keyboard_right =
         keyboard_input.just_pressed(KeyCode::Right) || keyboard_input.just_pressed(KeyCode::D);
 
+    let gamepad_select: bool = if let Some(gamepad) = gamepad {
+        button_inputs.just_pressed(GamepadButton::new(gamepad, GamepadButtonType::Select))
+    } else {
+        false
+    };
+    let keyboard_esc = keyboard_input.just_pressed(KeyCode::Escape);
+
     InputState {
-        input_up: (gamepad_up || keyboard_up),
-        input_down: (gamepad_down || keyboard_down),
-        input_left: (gamepad_left || keyboard_left),
-        input_right: (gamepad_right || keyboard_right),
+        action_up: (gamepad_up || keyboard_up),
+        action_down: (gamepad_down || keyboard_down),
+        action_left: (gamepad_left || keyboard_left),
+        action_right: (gamepad_right || keyboard_right),
+        action_pause: (gamepad_select || keyboard_esc),
     }
 }
