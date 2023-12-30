@@ -17,7 +17,7 @@ use snake::libs::{
     schedule::SchedulePlugin,
     score::ScorePlugin,
     snake::SnakePlugin,
-    ui::{finish_menu::FinishMenuPlugin, pause_ui::PauseUiPlugin, start_menu::StartMenuPlugin},
+    ui::{finish_menu::FinishMenuPlugin, pause_ui::PauseUiPlugin, start_menu::StartMenuPlugin, score_ui::ScoreUiPlugin},
 };
 
 fn main() {
@@ -53,6 +53,7 @@ fn main() {
         .add_plugins(ParticlePlugin)
         .add_plugins(PausePlugin)
         .add_plugins(PauseUiPlugin)
+        .add_plugins(ScoreUiPlugin)
         .add_plugins(FinishMenuPlugin);
 
     if cfg!(debug_assertions) {

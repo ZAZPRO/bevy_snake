@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::libs::{game_states::GameState, score::Score, utils::despawn_ui};
 
-fn create_menu(mut commands: Commands, score: ResMut<Score>) {
+fn create_menu(mut commands: Commands, score: Res<Score>) {
     commands
         .spawn(NodeBundle {
             style: Style {
