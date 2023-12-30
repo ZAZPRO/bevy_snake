@@ -59,9 +59,8 @@ fn main() {
         .add_plugins(ScoreUiPlugin)
         .add_plugins(FinishMenuPlugin);
 
-    if cfg!(debug_assertions) {
-        debug_plugins(&mut app);
-    }
+    #[cfg(debug_assertions)]
+    debug_plugins(&mut app);
 
     app.run();
 }
