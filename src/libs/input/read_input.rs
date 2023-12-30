@@ -1,18 +1,18 @@
-use bevy::prelude::*;
+use crate::libs::schedule::InGameSet;
 
-pub struct InputState {
-    pub action_up: bool,
-    pub action_down: bool,
-    pub action_left: bool,
-    pub action_right: bool,
-    pub action_pause: bool,
-}
+use super::action_events::{ActionMoveEvent, ActionPauseEvent};
+use super::direction::Direction;
+
+use bevy::prelude::*;
 
 pub fn get_user_input(
     gamepads: Res<Gamepads>,
     keyboard_input: Res<Input<KeyCode>>,
     button_inputs: Res<Input<GamepadButton>>,
-) -> InputState {
+    mut ev_action_move: EventWriter<ActionMoveEvent>,
+    mut ev_action_pause: EventWriter<ActionPauseEvent>,
+    time: Res<Time<Virtual>>,
+) {
     let gamepad = gamepads.iter().last();
 
     let gamepad_up: bool = if let Some(gamepad) = gamepad {
@@ -54,11 +54,33 @@ pub fn get_user_input(
     };
     let keyboard_esc = keyboard_input.just_pressed(KeyCode::Escape);
 
-    InputState {
-        action_up: (gamepad_up || keyboard_up),
-        action_down: (gamepad_down || keyboard_down),
-        action_left: (gamepad_left || keyboard_left),
-        action_right: (gamepad_right || keyboard_right),
-        action_pause: (gamepad_select || keyboard_esc),
+    // Do not produce move actions on pause.
+    if !time.is_paused() {
+        if gamepad_up || keyboard_up {
+            ev_action_move.send(ActionMoveEvent(Direction::Up));
+        }
+
+        if gamepad_down || keyboard_down {
+            ev_action_move.send(ActionMoveEvent(Direction::Down));
+        }
+
+        if gamepad_left || keyboard_left {
+            ev_action_move.send(ActionMoveEvent(Direction::Left));
+        }
+
+        if gamepad_right || keyboard_right {
+            ev_action_move.send(ActionMoveEvent(Direction::Right));
+        }
+    }
+
+    if gamepad_select || keyboard_esc {
+        ev_action_pause.send(ActionPauseEvent);
+    }
+}
+pub struct ReadInputPlugin;
+
+impl Plugin for ReadInputPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(Update, get_user_input.in_set(InGameSet::UserInput));
     }
 }

@@ -1,16 +1,9 @@
 use bevy::prelude::*;
 
-use super::{schedule::InGameSet, input::read_input::get_user_input};
+use super::{input::action_events::ActionPauseEvent, schedule::InGameSet};
 
-fn pause_game(
-    gamepads: Res<Gamepads>,
-    keyboard_input: Res<Input<KeyCode>>,
-    button_inputs: Res<Input<GamepadButton>>,
-    mut time: ResMut<Time<Virtual>>,
-) {
-    let input_state = get_user_input(gamepads, keyboard_input, button_inputs);
-
-    if input_state.action_pause {
+fn pause_game(mut ev_pause: EventReader<ActionPauseEvent>, mut time: ResMut<Time<Virtual>>) {
+    for _ in ev_pause.read() {
         if time.is_paused() {
             time.unpause();
         } else {

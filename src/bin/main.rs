@@ -12,6 +12,7 @@ use snake::libs::{
     game_configuration::GameConfigurationPlugin,
     game_states::GameStatatesPlugin,
     globals::{BACKGROUND_COLOR, WINDOW_SIZE},
+    input::{read_input::ReadInputPlugin, action_events::ActionEventsPlugin},
     particles::ParticlePlugin,
     pause::PausePlugin,
     schedule::SchedulePlugin,
@@ -49,6 +50,8 @@ fn main() {
         .add_plugins(CustomAnimationPlugin)
         .add_plugins(CameraPlugin)
         .add_plugins(StartMenuPlugin)
+        .add_plugins(ReadInputPlugin)
+        .add_plugins(ActionEventsPlugin)
         .add_plugins(ScorePlugin)
         .add_plugins(CellPlugin)
         .add_plugins(FoodPlugin)

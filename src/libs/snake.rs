@@ -8,33 +8,13 @@ use super::{
     game_configuration::GameConfiguration,
     game_states::GameState,
     globals::{GRID_CENTER, GRID_SIZE, HEAD_COLOR, TAIL_COLOR},
-    input::read_input::get_user_input,
+    input::{action_events::ActionMoveEvent, direction::Direction},
     schedule::InGameSet,
 };
 use bevy::{
     audio::{PlaybackMode, Volume, VolumeLevel},
     prelude::*,
 };
-
-#[derive(Default, Reflect, PartialEq, Clone, Copy, Debug)]
-pub enum Direction {
-    #[default]
-    Up,
-    Down,
-    Left,
-    Right,
-}
-
-impl Direction {
-    pub fn opposite(&self) -> Self {
-        match &self {
-            Direction::Up => Direction::Down,
-            Direction::Down => Direction::Up,
-            Direction::Left => Direction::Right,
-            Direction::Right => Direction::Left,
-        }
-    }
-}
 
 #[derive(Component, Reflect, Debug)]
 pub struct Head {
@@ -89,40 +69,15 @@ impl Snake {
     }
 }
 
-fn set_snake_direction(
-    gamepads: Res<Gamepads>,
-    keyboard_input: Res<Input<KeyCode>>,
-    button_input: Res<Input<GamepadButton>>,
-    mut query: Query<&mut Head>,
-    time: Res<Time<Virtual>>,
-) {
-    // Do not queue inputs on pause.
-    if time.is_paused() {
-        return;
-    }
-
-    let user_input_state = get_user_input(gamepads, keyboard_input, button_input);
-
-    if let Ok(mut head) = query.get_single_mut() {
-        let direction: Option<Direction> = if user_input_state.action_up {
-            Some(Direction::Up)
-        } else if user_input_state.action_down {
-            Some(Direction::Down)
-        } else if user_input_state.action_left {
-            Some(Direction::Left)
-        } else if user_input_state.action_right {
-            Some(Direction::Right)
-        } else {
-            None
-        };
-
-        if let Some(dir) = direction {
+fn set_snake_direction(mut ev_move: EventReader<ActionMoveEvent>, mut query: Query<&mut Head>) {
+    for evt in ev_move.read() {
+        if let Ok(mut head) = query.get_single_mut() {
             if let Some(last_dir) = head.planned_direction.back() {
-                if *last_dir != dir {
-                    head.planned_direction.push_back(dir);
+                if *last_dir != evt.0 {
+                    head.planned_direction.push_back(evt.0);
                 }
             } else {
-                head.planned_direction.push_back(dir);
+                head.planned_direction.push_back(evt.0);
             }
         }
     }
