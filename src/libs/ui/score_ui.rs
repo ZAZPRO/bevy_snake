@@ -34,8 +34,10 @@ fn spawn_score_ui(mut commands: Commands) {
 }
 
 fn update_score_ui(mut query: Query<&mut Text, With<ScoreUiTextTag>>, score: Res<Score>) {
-    let mut text = query.single_mut();
-    text.sections[0].value = score.0.to_string();
+    if score.is_changed() {
+        let mut text = query.single_mut();
+        text.sections[0].value = score.0.to_string();
+    }
 }
 
 pub struct ScoreUiPlugin;
