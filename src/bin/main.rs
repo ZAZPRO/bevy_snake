@@ -59,17 +59,5 @@ fn main() {
         .add_plugins(ScoreUiPlugin)
         .add_plugins(FinishMenuPlugin);
 
-    #[cfg(debug_assertions)]
-    debug_plugins(&mut app);
-
     app.run();
-}
-
-#[cfg(debug_assertions)]
-fn debug_plugins(app: &mut App) {
-    use bevy::diagnostic::LogDiagnosticsPlugin;
-    use bevy_inspector_egui::quick::WorldInspectorPlugin;
-
-    app.add_plugins(WorldInspectorPlugin::new());
-    app.add_plugins(LogDiagnosticsPlugin::default());
 }
