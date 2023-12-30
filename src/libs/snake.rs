@@ -1,11 +1,5 @@
 use std::collections::VecDeque;
 
-use bevy::{
-    audio::{PlaybackMode, Volume, VolumeLevel},
-    prelude::*,
-};
-use bevy_inspector_egui::{inspector_options::ReflectInspectorOptions, InspectorOptions};
-
 use super::{
     audio::AudioAssets,
     cell::{Cell, CellBundle},
@@ -17,9 +11,12 @@ use super::{
     input::read_input::get_user_input,
     schedule::InGameSet,
 };
+use bevy::{
+    audio::{PlaybackMode, Volume, VolumeLevel},
+    prelude::*,
+};
 
-#[derive(Default, Reflect, InspectorOptions, PartialEq, Clone, Copy, Debug)]
-#[reflect(InspectorOptions)]
+#[derive(Default, Reflect, PartialEq, Clone, Copy, Debug)]
 pub enum Direction {
     #[default]
     Up,
@@ -39,15 +36,13 @@ impl Direction {
     }
 }
 
-#[derive(Component, Reflect, InspectorOptions, Debug)]
-#[reflect(InspectorOptions)]
+#[derive(Component, Reflect, Debug)]
 pub struct Head {
     pub planned_direction: VecDeque<Direction>,
     pub direction: Direction,
 }
 
-#[derive(Component, Reflect, InspectorOptions)]
-#[reflect(InspectorOptions)]
+#[derive(Component, Reflect)]
 pub struct Tail;
 
 #[derive(Bundle)]
@@ -56,8 +51,7 @@ pub struct HeadBundle {
     cell: CellBundle,
 }
 
-#[derive(Resource, Default, Reflect, InspectorOptions)]
-#[reflect(Resource, InspectorOptions)]
+#[derive(Resource, Default, Reflect)]
 pub struct Snake {
     pub parts: Vec<Entity>,
 }

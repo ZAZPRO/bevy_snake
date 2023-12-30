@@ -1,7 +1,6 @@
 use std::time::Duration;
 
 use bevy::prelude::*;
-use bevy_inspector_egui::{inspector_options::ReflectInspectorOptions, InspectorOptions};
 
 use super::{
     cell::Cell,
@@ -29,8 +28,7 @@ impl GameDifficulty {
     }
 }
 
-#[derive(Resource, Reflect, InspectorOptions)]
-#[reflect(Resource, InspectorOptions)]
+#[derive(Resource, Reflect)]
 pub struct GameConfiguration {
     pub tick_timer: Timer,
     pub field: Vec<Cell>,

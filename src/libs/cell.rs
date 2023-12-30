@@ -1,13 +1,11 @@
 use bevy::prelude::*;
-use bevy_inspector_egui::{inspector_options::ReflectInspectorOptions, InspectorOptions};
 
 use super::{
     food::Food, game_configuration::GameConfiguration, globals::GRID_CELL, schedule::InGameSet,
     utils::grid_to_screen,
 };
 
-#[derive(Component, Clone, Copy, Default, PartialEq, Reflect, InspectorOptions)]
-#[reflect(InspectorOptions)]
+#[derive(Component, Clone, Copy, Default, PartialEq, Reflect)]
 pub struct Cell {
     pub x: u32,
     pub y: u32,
