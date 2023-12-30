@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use super::{input::get_user_input, schedule::InGameSet};
+use super::{schedule::InGameSet, input::read_input::get_user_input};
 
 fn pause_game(
     gamepads: Res<Gamepads>,

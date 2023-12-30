@@ -14,7 +14,7 @@ use super::{
     game_configuration::GameConfiguration,
     game_states::GameState,
     globals::{GRID_CENTER, GRID_SIZE, HEAD_COLOR, TAIL_COLOR},
-    input::get_user_input,
+    input::read_input::get_user_input,
     schedule::InGameSet,
 };
 

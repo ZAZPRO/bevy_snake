@@ -17,7 +17,10 @@ use snake::libs::{
     schedule::SchedulePlugin,
     score::ScorePlugin,
     snake::SnakePlugin,
-    ui::{finish_menu::FinishMenuPlugin, pause_ui::PauseUiPlugin, start_menu::StartMenuPlugin, score_ui::ScoreUiPlugin},
+    ui::{
+        finish_menu::FinishMenuPlugin, pause_ui::PauseUiPlugin, score_ui::ScoreUiPlugin,
+        start_menu::StartMenuPlugin,
+    },
 };
 
 fn main() {
@@ -57,12 +60,17 @@ fn main() {
         .add_plugins(FinishMenuPlugin);
 
     if cfg!(debug_assertions) {
-        use bevy::diagnostic::LogDiagnosticsPlugin;
-        use bevy_inspector_egui::quick::WorldInspectorPlugin;
-
-        app.add_plugins(WorldInspectorPlugin::new());
-        app.add_plugins(LogDiagnosticsPlugin::default());
+        debug_plugins(&mut app);
     }
 
     app.run();
+}
+
+#[cfg(debug_assertions)]
+fn debug_plugins(app: &mut App) {
+    use bevy::diagnostic::LogDiagnosticsPlugin;
+    use bevy_inspector_egui::quick::WorldInspectorPlugin;
+
+    app.add_plugins(WorldInspectorPlugin::new());
+    app.add_plugins(LogDiagnosticsPlugin::default());
 }
