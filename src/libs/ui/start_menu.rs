@@ -94,16 +94,21 @@ fn button_click(
         if interaction == &Interaction::Pressed {
             match tag.0 {
                 ButtonType::Easy => {
-                    game_configuration.set_difficulty(game_configuration::GameDifficulty::Easy);
+                    game_configuration
+                        .set_difficulty_and_reset_timer(game_configuration::GameDifficulty::Easy);
                 }
                 ButtonType::Medium => {
-                    game_configuration.set_difficulty(game_configuration::GameDifficulty::Medium);
+                    game_configuration
+                        .set_difficulty_and_reset_timer(game_configuration::GameDifficulty::Medium);
                 }
                 ButtonType::Hard => {
-                    game_configuration.set_difficulty(game_configuration::GameDifficulty::Hard);
+                    game_configuration
+                        .set_difficulty_and_reset_timer(game_configuration::GameDifficulty::Hard);
                 }
                 ButtonType::Extreme => {
-                    game_configuration.set_difficulty(game_configuration::GameDifficulty::Extreme);
+                    game_configuration.set_difficulty_and_reset_timer(
+                        game_configuration::GameDifficulty::Extreme,
+                    );
                 }
             }
             next_state.set(GameState::InGame);

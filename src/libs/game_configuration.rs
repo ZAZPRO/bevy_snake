@@ -8,7 +8,7 @@ use super::{
     schedule::InGameSet,
 };
 
-#[derive(Default)]
+#[derive(Default, Reflect, Clone, Copy)]
 pub enum GameDifficulty {
     Easy,
     #[default]
@@ -30,6 +30,7 @@ impl GameDifficulty {
 
 #[derive(Resource, Reflect)]
 pub struct GameConfiguration {
+    pub current_difficulty: GameDifficulty,
     pub tick_timer: Timer,
     pub field: Vec<Cell>,
 }
@@ -45,16 +46,22 @@ impl GameConfiguration {
         }
 
         Self {
+            current_difficulty: GameDifficulty::default(),
             tick_timer: Timer::from_seconds(difficulty.get_tick_rate(), TimerMode::Repeating),
             field,
         }
     }
 
-    pub fn set_difficulty(&mut self, difficulty: GameDifficulty) {
+    pub fn set_difficulty_and_reset_timer(&mut self, difficulty: GameDifficulty) {
+        self.current_difficulty = difficulty;
+        self.set_game_speed(difficulty.get_tick_rate());
+    }
+
+    pub fn set_game_speed(&mut self, game_speed: f32) {
         self.tick_timer.pause();
         self.tick_timer.reset();
         self.tick_timer
-            .set_duration(Duration::from_secs_f32(difficulty.get_tick_rate()));
+            .set_duration(Duration::from_secs_f32(game_speed));
         self.tick_timer.unpause();
     }
 }

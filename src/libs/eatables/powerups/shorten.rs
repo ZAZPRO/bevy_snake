@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::libs::{
-    food::eat_event::EatEvent,
+    eatables::eat_event::EatEvent,
     schedule::InGameSet,
     snake::{Snake, Tail},
 };

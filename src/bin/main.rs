@@ -7,7 +7,7 @@ use snake::libs::{
     audio::AudioPlugin,
     camera::CameraPlugin,
     cell::CellPlugin,
-    food::{eat_event::EventsPlugin, food::FoodPlugin, powerups::powerup::PowerupPlugins},
+    eatables::{eat_event::EventsPlugin, food::FoodPlugin, powerups::powerup::PowerupPlugins},
     game_configuration::GameConfigurationPlugin,
     game_states::GameStatatesPlugin,
     globals::{BACKGROUND_COLOR, WINDOW_SIZE},

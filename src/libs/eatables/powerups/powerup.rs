@@ -1,7 +1,7 @@
 use bevy::{app::PluginGroupBuilder, prelude::*};
 use rand::Rng;
 
-use super::shorten::ShortenPowerupPlugin;
+use super::{shorten::ShortenPowerupPlugin, slowdown::SlowdownPowerupPlugin};
 
 #[derive(Component, Debug, Clone, Copy, PartialEq)]
 pub enum Powerup {
@@ -50,24 +50,23 @@ impl Powerup {
 
     pub fn get_random_powerup() -> Powerup {
         let random_number = rand::thread_rng().gen_range(0.0..1.0);
-        let powerup = Powerup::chance_to_powerup(random_number);
-        powerup
+        Powerup::chance_to_powerup(random_number)
     }
 
-    fn get_speed(&self) -> f32 {
+    pub fn speed(&self) -> f32 {
         match self {
             Powerup::Normal => 1.0,
-            Powerup::Slowdown => 0.5,
+            Powerup::Slowdown => 2.0,
             Powerup::Shorten => 1.0,
             Powerup::Feast => 1.0,
         }
     }
 
-    fn get_duration(&self) -> u32 {
+    pub fn duration(&self) -> u32 {
         match self {
             Powerup::Normal => 0,
-            Powerup::Slowdown => 5,
-            Powerup::Shorten => 5,
+            Powerup::Slowdown => 20,
+            Powerup::Shorten => 0,
             Powerup::Feast => 0,
         }
     }
@@ -77,6 +76,8 @@ pub struct PowerupPlugins;
 
 impl PluginGroup for PowerupPlugins {
     fn build(self) -> PluginGroupBuilder {
-        PluginGroupBuilder::start::<Self>().add(ShortenPowerupPlugin)
+        PluginGroupBuilder::start::<Self>()
+            .add(ShortenPowerupPlugin)
+            .add(SlowdownPowerupPlugin)
     }
 }

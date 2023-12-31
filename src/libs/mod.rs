@@ -2,7 +2,7 @@ pub mod animation;
 pub mod audio;
 pub mod camera;
 pub mod cell;
-pub mod food;
+pub mod eatables;
 pub mod game_configuration;
 pub mod game_states;
 pub mod globals;

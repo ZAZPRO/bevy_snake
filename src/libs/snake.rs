@@ -3,7 +3,7 @@ use std::collections::VecDeque;
 use super::{
     audio::AudioAssets,
     cell::{Cell, CellBundle},
-    food::{eat_event::EatEvent, food::Food, powerups::powerup::Powerup},
+    eatables::{eat_event::EatEvent, food::Food, powerups::powerup::Powerup},
     game_configuration::GameConfiguration,
     game_states::GameState,
     globals::{GRID_CENTER, GRID_SIZE, HEAD_COLOR, TAIL_COLOR},
@@ -200,7 +200,6 @@ fn grow_snake_on_eat(
                 mode: PlaybackMode::Despawn,
                 ..default()
             },
-            ..default()
         });
     }
 }
