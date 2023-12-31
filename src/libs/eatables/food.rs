@@ -1,9 +1,15 @@
 use bevy::prelude::*;
 use rand::Rng;
 
-use crate::libs::{cell::{CellBundle, Cell}, animation::{BREATHE_ANIMATION_NAME, AnimationHandles}, game_configuration::GameConfiguration, game_states::GameState, schedule::InGameSet};
+use crate::libs::{
+    animation::{AnimationHandles, BREATHE_ANIMATION_NAME},
+    cell::{Cell, CellBundle},
+    game_configuration::GameConfiguration,
+    game_states::GameState,
+    schedule::InGameSet,
+};
 
-use super::{powerups::powerup::Powerup, eat_event::EatEvent};
+use super::{eat_event::EatEvent, powerups::powerup::Powerup};
 
 #[derive(Component, Clone, Copy)]
 pub struct Food(pub Powerup);
@@ -40,12 +46,13 @@ impl FoodBundle {
     }
 }
 
-fn random_pos_food_bundle(
+pub fn random_pos_food_bundle(
     animation: Handle<AnimationClip>,
     query: Query<&Cell, Without<Food>>,
     game_configuration: Res<GameConfiguration>,
     powerup: Option<Powerup>,
-) -> FoodBundle {
+    amount: Option<u32>,
+) -> Vec<FoodBundle> {
     // My crude logic, this can be improved in many ways.
     // 1. Get a Vec of game field size filled with all possible positions.
     // 2. Remove taken positions.
@@ -60,15 +67,33 @@ fn random_pos_food_bundle(
         };
     }
 
-    let random_pos_id = rand::thread_rng().gen_range(0..taken_pos.len());
-    let random_pos = taken_pos[random_pos_id];
-
-    let powerup = match powerup {
-        Some(powerup) => powerup,
-        None => Powerup::get_random_powerup(),
+    let amount = match amount {
+        Some(amount) => amount,
+        None => 1,
     };
 
-    FoodBundle::new(random_pos.x, random_pos.y, animation, powerup)
+    let mut food_bundles: Vec<FoodBundle> = Vec::new();
+
+    println!("------------------");
+    for _ in 0..amount {
+        let random_pos_id = rand::thread_rng().gen_range(0..taken_pos.len());
+        let random_pos = taken_pos[random_pos_id];
+        taken_pos.remove(random_pos_id);
+
+        let powerup = match powerup {
+            Some(powerup) => powerup,
+            None => Powerup::get_random_powerup(),
+        };
+
+        println!(
+            "id: {}, type: {:?}, x: {}, y: {}",
+            random_pos_id, powerup, random_pos.x, random_pos.y
+        );
+        let food_bundle = FoodBundle::new(random_pos.x, random_pos.y, animation.clone(), powerup);
+        food_bundles.push(food_bundle);
+    }
+
+    food_bundles
 }
 
 fn spawn_first_food(
@@ -77,12 +102,17 @@ fn spawn_first_food(
     query: Query<&Cell, Without<Food>>,
     game_configuration: Res<GameConfiguration>,
 ) {
-    commands.spawn(random_pos_food_bundle(
+    let food_bundle = random_pos_food_bundle(
         animation_handles.breathe.clone(),
         query,
         game_configuration,
         Some(Powerup::Normal),
-    ));
+        None,
+    )
+    .pop()
+    .unwrap();
+
+    commands.spawn(food_bundle);
 }
 
 fn despawn_food_on_eat(mut ev_eat: EventReader<EatEvent>, mut commands: Commands) {
@@ -98,19 +128,30 @@ fn spawn_food_on_eat(
     query: Query<&Cell, Without<Food>>,
     game_configuration: Res<GameConfiguration>,
 ) {
-    let i = ev_eat.read();
+    let mut iter = ev_eat.read();
 
     // As I expect to have only one event at a time, I don't need to iterate over it.
     // So I just consume the iterator if it's not empty.
-    if i.len() > 0 {
-        for _ in i {}
+    if iter.len() > 0 {
+        let event = iter.next();
 
-        commands.spawn(random_pos_food_bundle(
-            animation_handles.breathe.clone(),
-            query,
-            game_configuration,
-            None,
-        ));
+        for _ in iter {}
+
+        if let Some(ev) = event {
+            if ev.food.0 != Powerup::Feast {
+                let food_bundle = random_pos_food_bundle(
+                    animation_handles.breathe.clone(),
+                    query,
+                    game_configuration,
+                    None,
+                    None,
+                )
+                .pop()
+                .unwrap();
+
+                commands.spawn(food_bundle);
+            }
+        }
     }
 }
 

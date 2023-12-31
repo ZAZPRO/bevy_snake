@@ -1,7 +1,9 @@
 use bevy::{app::PluginGroupBuilder, prelude::*};
 use rand::Rng;
 
-use super::{shorten::ShortenPowerupPlugin, slowdown::SlowdownPowerupPlugin};
+use super::{
+    feast::FeastPowerupPlugin, shorten::ShortenPowerupPlugin, slowdown::SlowdownPowerupPlugin,
+};
 
 #[derive(Component, Debug, Clone, Copy, PartialEq)]
 pub enum Powerup {
@@ -62,12 +64,12 @@ impl Powerup {
         }
     }
 
-    pub fn duration(&self) -> u32 {
+    pub fn power(&self) -> u32 {
         match self {
             Powerup::Normal => 0,
             Powerup::Slowdown => 20,
             Powerup::Shorten => 0,
-            Powerup::Feast => 0,
+            Powerup::Feast => 2,
         }
     }
 }
@@ -79,5 +81,6 @@ impl PluginGroup for PowerupPlugins {
         PluginGroupBuilder::start::<Self>()
             .add(ShortenPowerupPlugin)
             .add(SlowdownPowerupPlugin)
+            .add(FeastPowerupPlugin)
     }
 }

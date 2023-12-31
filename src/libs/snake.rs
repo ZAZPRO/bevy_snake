@@ -58,13 +58,15 @@ impl Snake {
         snake: &mut ResMut<Snake>,
     ) {
         let last_id = snake.parts.last().unwrap();
-        let last_cell = query.get(*last_id).unwrap();
+        let last_cell_search = query.get(*last_id);
 
-        let id = commands
-            .spawn(CellBundle::new(*last_cell, TAIL_COLOR))
-            .insert(Tail)
-            .id();
-        snake.parts.push(id);
+        if let Ok(last_cell) = last_cell_search {
+            let id = commands
+                .spawn(CellBundle::new(*last_cell, TAIL_COLOR))
+                .insert(Tail)
+                .id();
+            snake.parts.push(id);
+        }
     }
 
     pub fn remove_last_tail(

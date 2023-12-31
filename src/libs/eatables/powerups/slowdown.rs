@@ -24,7 +24,7 @@ fn slowdown_on_powerup(
             configuration.set_game_speed(new_game_speed);
 
             // Set timer duration.
-            let powerup_timer_duration_secs = new_game_speed * Powerup::Slowdown.duration() as f32;
+            let powerup_timer_duration_secs = new_game_speed * Powerup::Slowdown.power() as f32;
 
             powerup_timer.0.pause();
             powerup_timer.0.reset();
