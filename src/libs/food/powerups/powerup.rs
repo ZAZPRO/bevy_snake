@@ -1,7 +1,9 @@
-use bevy::prelude::*;
+use bevy::{app::PluginGroupBuilder, prelude::*};
 use rand::Rng;
 
-#[derive(Component, Debug, Clone, Copy)]
+use super::shorten::ShortenPowerupPlugin;
+
+#[derive(Component, Debug, Clone, Copy, PartialEq)]
 pub enum Powerup {
     Normal,
     Slowdown,
@@ -68,5 +70,13 @@ impl Powerup {
             Powerup::Shorten => 5,
             Powerup::Feast => 0,
         }
+    }
+}
+
+pub struct PowerupPlugins;
+
+impl PluginGroup for PowerupPlugins {
+    fn build(self) -> PluginGroupBuilder {
+        PluginGroupBuilder::start::<Self>().add(ShortenPowerupPlugin)
     }
 }

@@ -3,7 +3,7 @@ use std::collections::VecDeque;
 use super::{
     audio::AudioAssets,
     cell::{Cell, CellBundle},
-    food::{eat_event::EatEvent, food::Food},
+    food::{eat_event::EatEvent, food::Food, powerups::powerup::Powerup},
     game_configuration::GameConfiguration,
     game_states::GameState,
     globals::{GRID_CENTER, GRID_SIZE, HEAD_COLOR, TAIL_COLOR},
@@ -65,6 +65,20 @@ impl Snake {
             .insert(Tail)
             .id();
         snake.parts.push(id);
+    }
+
+    pub fn remove_last_tail(
+        commands: &mut Commands,
+        query: &Query<Entity, With<Tail>>,
+        snake: &mut ResMut<Snake>,
+    ) {
+        let last_id = snake.parts.last().unwrap();
+        let last_tail = query.get(*last_id);
+
+        if let Ok(id) = last_tail {
+            commands.entity(id).despawn();
+            snake.parts.pop();
+        }
     }
 }
 
@@ -173,7 +187,11 @@ fn grow_snake_on_eat(
     mut snake: ResMut<Snake>,
     audio: Res<AudioAssets>,
 ) {
-    for _ in ev_eat.read() {
+    for ev in ev_eat.read() {
+        if ev.food.0 == Powerup::Shorten {
+            return;
+        }
+
         Snake::new_tail(&mut commands, &query, &mut snake);
 
         commands.spawn(AudioBundle {

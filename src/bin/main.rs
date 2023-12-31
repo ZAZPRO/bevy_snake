@@ -7,6 +7,7 @@ use snake::libs::{
     audio::AudioPlugin,
     camera::CameraPlugin,
     cell::CellPlugin,
+    food::{eat_event::EventsPlugin, food::FoodPlugin, powerups::powerup::PowerupPlugins},
     game_configuration::GameConfigurationPlugin,
     game_states::GameStatatesPlugin,
     globals::{BACKGROUND_COLOR, WINDOW_SIZE},
@@ -19,7 +20,7 @@ use snake::libs::{
     ui::{
         finish_menu::FinishMenuPlugin, pause_ui::PauseUiPlugin, score_ui::ScoreUiPlugin,
         start_menu::StartMenuPlugin,
-    }, food::{eat_event::EventsPlugin, food::FoodPlugin},
+    },
 };
 
 fn main() {
@@ -56,6 +57,7 @@ fn main() {
         .add_plugins(SnakePlugin)
         .add_plugins(ParticlePlugin)
         .add_plugins(PausePlugin)
+        .add_plugins(PowerupPlugins)
         .add_plugins(PauseUiPlugin)
         .add_plugins(ScoreUiPlugin)
         .add_plugins(FinishMenuPlugin);
