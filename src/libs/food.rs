@@ -7,12 +7,82 @@ use super::{
     events::EatEvent,
     game_configuration::GameConfiguration,
     game_states::GameState,
-    globals::FOOD_COLOR,
     schedule::InGameSet,
 };
 
-#[derive(Component)]
-pub struct Food;
+#[derive(Component, Debug, Clone, Copy)]
+pub enum Powerup {
+    Normal,
+    Slowdown,
+    Shorten,
+    Feast,
+    //TODO
+    //Ghost,
+}
+
+impl Powerup {
+    pub fn get_color(&self) -> Color {
+        match self {
+            Powerup::Normal => Color::rgb(0.9, 0.1, 0.1),
+            Powerup::Slowdown => Color::rgb(0.0, 0.0, 0.9),
+            Powerup::Shorten => Color::rgb(0.9, 0.9, 0.0),
+            Powerup::Feast => Color::rgb(0.0, 0.9, 0.0),
+        }
+    }
+
+    fn get_chance(&self) -> f32 {
+        match self {
+            Powerup::Normal => 0.80,
+            Powerup::Shorten => 0.1,
+            Powerup::Feast => 0.05,
+            Powerup::Slowdown => 0.05,
+        }
+    }
+
+    fn chance_to_powerup(random_number: f32) -> Powerup {
+        if random_number < Powerup::Feast.get_chance() {
+            Powerup::Feast
+        } else if random_number < Powerup::Feast.get_chance() + Powerup::Shorten.get_chance() {
+            Powerup::Shorten
+        } else if random_number
+            < Powerup::Feast.get_chance()
+                + Powerup::Shorten.get_chance()
+                + Powerup::Slowdown.get_chance()
+        {
+            Powerup::Slowdown
+        } else {
+            Powerup::Normal
+        }
+    }
+
+    fn get_random_powerup() -> Powerup {
+        let random_number = rand::thread_rng().gen_range(0.0..1.0);
+        let powerup = Powerup::chance_to_powerup(random_number);
+        println!("Chance {}, powerup: {:?}", random_number, powerup);
+        powerup
+    }
+
+    fn get_speed(&self) -> f32 {
+        match self {
+            Powerup::Normal => 1.0,
+            Powerup::Slowdown => 0.5,
+            Powerup::Shorten => 1.0,
+            Powerup::Feast => 1.0,
+        }
+    }
+
+    fn get_duration(&self) -> u32 {
+        match self {
+            Powerup::Normal => 0,
+            Powerup::Slowdown => 5,
+            Powerup::Shorten => 5,
+            Powerup::Feast => 0,
+        }
+    }
+}
+
+#[derive(Component, Clone, Copy)]
+pub struct Food(pub Powerup);
 
 #[derive(Bundle)]
 pub struct FoodBundle {
@@ -23,7 +93,12 @@ pub struct FoodBundle {
 }
 
 impl FoodBundle {
-    pub fn new(grid_x: u32, grid_y: u32, animation: Handle<AnimationClip>) -> Self {
+    pub fn new(
+        grid_x: u32,
+        grid_y: u32,
+        animation: Handle<AnimationClip>,
+        powerup: Powerup,
+    ) -> Self {
         let cell = Cell {
             x: grid_x,
             y: grid_y,
@@ -33,8 +108,8 @@ impl FoodBundle {
         player.play(animation).repeat();
 
         Self {
-            food: Food,
-            cell: CellBundle::new(cell, FOOD_COLOR),
+            food: Food(powerup),
+            cell: CellBundle::new(cell, powerup.get_color()),
             name: Name::new(BREATHE_ANIMATION_NAME),
             animation: player,
         }
@@ -45,6 +120,7 @@ fn random_pos_food_bundle(
     animation: Handle<AnimationClip>,
     query: Query<&Cell, Without<Food>>,
     game_configuration: Res<GameConfiguration>,
+    powerup: Option<Powerup>,
 ) -> FoodBundle {
     // My crude logic, this can be improved in many ways.
     // 1. Get a Vec of game field size filled with all possible positions.
@@ -63,10 +139,15 @@ fn random_pos_food_bundle(
     let random_pos_id = rand::thread_rng().gen_range(0..taken_pos.len());
     let random_pos = taken_pos[random_pos_id];
 
-    FoodBundle::new(random_pos.x, random_pos.y, animation)
+    let powerup = match powerup {
+        Some(powerup) => powerup,
+        None => Powerup::get_random_powerup(),
+    };
+
+    FoodBundle::new(random_pos.x, random_pos.y, animation, powerup)
 }
 
-fn spawn_food_randomly(
+fn spawn_first_food(
     mut commands: Commands,
     animation_handles: Res<AnimationHandles>,
     query: Query<&Cell, Without<Food>>,
@@ -76,6 +157,7 @@ fn spawn_food_randomly(
         animation_handles.breathe.clone(),
         query,
         game_configuration,
+        Some(Powerup::Normal),
     ));
 }
 
@@ -103,6 +185,7 @@ fn spawn_food_on_eat(
             animation_handles.breathe.clone(),
             query,
             game_configuration,
+            None,
         ));
     }
 }
@@ -117,7 +200,7 @@ pub struct FoodPlugin;
 
 impl Plugin for FoodPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(GameState::InGame), spawn_food_randomly)
+        app.add_systems(OnEnter(GameState::InGame), spawn_first_food)
             .add_systems(Update, spawn_food_on_eat.in_set(InGameSet::SpawnEntities))
             .add_systems(
                 Update,

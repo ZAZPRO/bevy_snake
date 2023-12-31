@@ -10,7 +10,6 @@ pub const TOP_WINDOW_BORDER: f32 = WINDOW_SIZE / 2.;
 
 pub const BACKGROUND_COLOR: Color = Color::rgb(0.24, 0.25, 0.24);
 
-pub const FOOD_COLOR: Color = Color::rgb(0.9, 0.1, 0.1);
 pub const HEAD_COLOR: Color = Color::rgb(0.9, 0.9, 0.9);
 pub const TAIL_COLOR: Color = Color::rgb(0.15, 0.79, 0.58);
 

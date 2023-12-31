@@ -3,8 +3,6 @@ use bevy_particle_systems::{
     JitteredValue, ParticleBurst, ParticleSystem, ParticleSystemBundle, Playing, VelocityModifier,
 };
 
-use crate::libs::globals::FOOD_COLOR;
-
 use super::{events::EatEvent, schedule::InGameSet, utils::grid_to_screen};
 
 fn spawn_particle_on_eat(mut ev_eat: EventReader<EatEvent>, mut commands: Commands) {
@@ -25,7 +23,7 @@ fn spawn_particle_on_eat(mut ev_eat: EventReader<EatEvent>, mut commands: Comman
                     lifetime: JitteredValue::new(0.4),
                     scale: 2.0.into(),
                     velocity_modifiers: vec![VelocityModifier::Drag(0.001.into())],
-                    color: FOOD_COLOR.into(),
+                    color: ev.food.0.get_color().into(),
                     bursts: vec![ParticleBurst {
                         time: 0.0,
                         count: 50,

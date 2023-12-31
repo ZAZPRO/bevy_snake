@@ -6,17 +6,18 @@ use super::{cell::Cell, food::Food, schedule::InGameSet, snake::Head};
 pub struct EatEvent {
     pub id: Entity,
     pub pos: Cell,
+    pub food: Food,
 }
 
 fn send_eat_event(
     head: Query<&Cell, With<Head>>,
-    foods: Query<(Entity, &Cell), With<Food>>,
+    foods: Query<(Entity, &Cell, &Food)>,
     mut ev_eat: EventWriter<EatEvent>,
 ) {
     if let Ok(&head) = head.get_single() {
-        for (id, &food) in foods.iter() {
-            if head == food {
-                ev_eat.send(EatEvent { id, pos: food });
+        for (id, &pos, &food) in foods.iter() {
+            if head == pos {
+                ev_eat.send(EatEvent { id, pos, food });
             }
         }
     }
