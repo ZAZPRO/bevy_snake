@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 
-use super::{cell::Cell, food::Food, schedule::InGameSet, snake::Head};
+use crate::libs::{cell::Cell, snake::Head, schedule::InGameSet};
+
+use super::food::Food;
 
 #[derive(Event)]
 pub struct EatEvent {

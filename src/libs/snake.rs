@@ -3,8 +3,7 @@ use std::collections::VecDeque;
 use super::{
     audio::AudioAssets,
     cell::{Cell, CellBundle},
-    events::EatEvent,
-    food::Food,
+    food::{eat_event::EatEvent, food::Food},
     game_configuration::GameConfiguration,
     game_states::GameState,
     globals::{GRID_CENTER, GRID_SIZE, HEAD_COLOR, TAIL_COLOR},

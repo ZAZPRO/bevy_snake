@@ -7,12 +7,10 @@ use snake::libs::{
     audio::AudioPlugin,
     camera::CameraPlugin,
     cell::CellPlugin,
-    events::EventsPlugin,
-    food::FoodPlugin,
     game_configuration::GameConfigurationPlugin,
     game_states::GameStatatesPlugin,
     globals::{BACKGROUND_COLOR, WINDOW_SIZE},
-    input::{read_input::ReadInputPlugin, action_events::ActionEventsPlugin},
+    input::{action_events::ActionEventsPlugin, read_input::ReadInputPlugin},
     particles::ParticlePlugin,
     pause::PausePlugin,
     schedule::SchedulePlugin,
@@ -21,7 +19,7 @@ use snake::libs::{
     ui::{
         finish_menu::FinishMenuPlugin, pause_ui::PauseUiPlugin, score_ui::ScoreUiPlugin,
         start_menu::StartMenuPlugin,
-    },
+    }, food::{eat_event::EventsPlugin, food::FoodPlugin},
 };
 
 fn main() {

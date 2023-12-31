@@ -3,7 +3,7 @@ use bevy_particle_systems::{
     JitteredValue, ParticleBurst, ParticleSystem, ParticleSystemBundle, Playing, VelocityModifier,
 };
 
-use super::{events::EatEvent, schedule::InGameSet, utils::grid_to_screen};
+use super::{food::eat_event::EatEvent, schedule::InGameSet, utils::grid_to_screen};
 
 fn spawn_particle_on_eat(mut ev_eat: EventReader<EatEvent>, mut commands: Commands) {
     for ev in ev_eat.read() {

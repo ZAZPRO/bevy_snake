@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 
 use super::{
-    food::Food, game_configuration::GameConfiguration, globals::GRID_CELL, schedule::InGameSet,
-    utils::grid_to_screen,
+    game_configuration::GameConfiguration, globals::GRID_CELL, schedule::InGameSet,
+    utils::grid_to_screen, food::food::Food,
 };
 
 #[derive(Component, Clone, Copy, Default, PartialEq, Reflect)]
