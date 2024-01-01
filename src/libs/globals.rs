@@ -13,4 +13,4 @@ pub const BACKGROUND_COLOR: Color = Color::rgb(0.24, 0.25, 0.24);
 pub const HEAD_COLOR: Color = Color::rgb(0.9, 0.9, 0.9);
 pub const TAIL_COLOR: Color = Color::rgb(0.15, 0.79, 0.58);
 
-pub const BASE_GAME_SPEED: f32 = 0.5;
+pub const BASE_GAME_SPEED: f32 = 0.25;
