@@ -67,10 +67,7 @@ pub fn random_pos_food_bundle(
         };
     }
 
-    let amount = match amount {
-        Some(amount) => amount,
-        None => 1,
-    };
+    let amount: u32 = amount.unwrap_or(1);
 
     let mut food_bundles: Vec<FoodBundle> = Vec::new();
 
@@ -79,10 +76,7 @@ pub fn random_pos_food_bundle(
         let random_pos = taken_pos[random_pos_id];
         taken_pos.remove(random_pos_id);
 
-        let powerup = match powerup {
-            Some(powerup) => powerup,
-            None => Powerup::get_random_powerup(),
-        };
+        let powerup = powerup.unwrap_or(Powerup::get_random_powerup());
 
         let food_bundle = FoodBundle::new(random_pos.x, random_pos.y, animation.clone(), powerup);
         food_bundles.push(food_bundle);
