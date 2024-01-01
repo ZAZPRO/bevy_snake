@@ -55,3 +55,6 @@ strip = true
 
 [build-dependencies]
 embed-resource = "1.4"
+
+[lints.clippy]
+type_complexity = "allow"
