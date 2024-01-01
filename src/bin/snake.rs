@@ -23,10 +23,7 @@ use snake::libs::{
     schedule::SchedulePlugin,
     score::ScorePlugin,
     snake::SnakePlugin,
-    ui::{
-        finish_menu::FinishMenuPlugin, pause_ui::PauseUiPlugin, score_ui::ScoreUiPlugin,
-        start_menu::StartMenuPlugin,
-    },
+    ui::snake_ui_plugin::SnakeUiPlugins,
 };
 use winit::window::Icon;
 
@@ -76,7 +73,6 @@ fn main() {
         .add_plugins(GameConfigurationPlugin)
         .add_plugins(CustomAnimationPlugin)
         .add_plugins(CameraPlugin)
-        .add_plugins(StartMenuPlugin)
         .add_plugins(ReadInputPlugin)
         .add_plugins(ActionEventsPlugin)
         .add_plugins(ScorePlugin)
@@ -86,9 +82,7 @@ fn main() {
         .add_plugins(ParticlePlugin)
         .add_plugins(PausePlugin)
         .add_plugins(PowerupPlugins)
-        .add_plugins(PauseUiPlugin)
-        .add_plugins(ScoreUiPlugin)
-        .add_plugins(FinishMenuPlugin);
+        .add_plugins(SnakeUiPlugins);
 
     app.run();
 }

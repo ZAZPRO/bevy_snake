@@ -3,8 +3,9 @@ use bevy::prelude::*;
 use crate::libs::{
     game_configuration::{self, GameConfiguration},
     game_states::GameState,
-    utils::despawn_ui,
 };
+
+use super::ui_utils::despawn_ui;
 
 enum ButtonType {
     Easy,

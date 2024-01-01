@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 
-use crate::libs::{game_states::GameState, score::Score, utils::despawn_ui};
+use crate::libs::{game_states::GameState, score::Score};
+
+use super::ui_utils::despawn_ui;
 
 fn create_menu(mut commands: Commands, score: Res<Score>) {
     commands

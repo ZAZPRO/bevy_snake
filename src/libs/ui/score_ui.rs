@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 
-use crate::libs::{game_states::GameState, schedule::InGameSet, score::Score, utils::despawn_ui};
+use crate::libs::{game_states::GameState, schedule::InGameSet, score::Score};
+
+use super::ui_utils::despawn_ui;
 
 #[derive(Component)]
 struct ScoreUiTextTag;
