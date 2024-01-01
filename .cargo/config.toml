@@ -1,5 +1,0 @@
-[target.wasm32-unknown-unknown]
-runner = "wasm-server-runner"
-
-[target.wasm32-unknown-unknown.release]
-rustflags = "-C opt-level=z -C lto=thin -C codegen-units=1 -C strip=true"

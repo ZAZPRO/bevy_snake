@@ -1,0 +1,4 @@
+[build]
+public_url = "/"
+release = true
+no_minification = false
