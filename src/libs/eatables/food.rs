@@ -121,6 +121,7 @@ fn spawn_food_on_eat(
     mut commands: Commands,
     animation_handles: Res<AnimationHandles>,
     query: Query<&Cell, Without<Food>>,
+    food_on_field: Query<&Food>,
     game_configuration: Res<GameConfiguration>,
 ) {
     let mut iter = ev_eat.read();
@@ -133,7 +134,7 @@ fn spawn_food_on_eat(
         for _ in iter {}
 
         if let Some(ev) = event {
-            if ev.food.0 != Powerup::Feast {
+            if ev.food.0 != Powerup::Feast && food_on_field.iter().len() == 0 {
                 let food_bundle = random_pos_food_bundle(
                     animation_handles.breathe.clone(),
                     query,
