@@ -8,6 +8,12 @@ edition = "2021"
 [dependencies]
 bevy_particle_systems = "0.11.2"
 rand = "0.8.5"
+winit = { version = "0.28.7", default-features = false }
+
+[dependencies.image]
+version = "0.24"
+default_features = false
+features = ["png"]
 
 [dependencies.bevy]
 version = "0.12.1"
@@ -29,6 +35,7 @@ features = [
     "vorbis",
     "webgl2",
     "x11",
+    "wayland",
     "accesskit_unix",
 ]
 
@@ -41,5 +48,10 @@ opt-level = 1
 opt-level = 3
 
 [profile.release]
+opt-level = 3
 lto = "thin"
 codegen-units = 1
+strip = true
+
+[build-dependencies]
+embed-resource = "1.4"
