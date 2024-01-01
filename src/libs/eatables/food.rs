@@ -74,7 +74,6 @@ pub fn random_pos_food_bundle(
 
     let mut food_bundles: Vec<FoodBundle> = Vec::new();
 
-    println!("------------------");
     for _ in 0..amount {
         let random_pos_id = rand::thread_rng().gen_range(0..taken_pos.len());
         let random_pos = taken_pos[random_pos_id];
@@ -85,10 +84,6 @@ pub fn random_pos_food_bundle(
             None => Powerup::get_random_powerup(),
         };
 
-        println!(
-            "id: {}, type: {:?}, x: {}, y: {}",
-            random_pos_id, powerup, random_pos.x, random_pos.y
-        );
         let food_bundle = FoodBundle::new(random_pos.x, random_pos.y, animation.clone(), powerup);
         food_bundles.push(food_bundle);
     }
