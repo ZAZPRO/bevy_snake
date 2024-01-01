@@ -16,7 +16,7 @@ fn shorten_snake_on_powerup(
 ) {
     for ev in ev_eat.read() {
         if ev.food.0 == Powerup::Shorten {
-            Snake::remove_last_tail(&mut commands, &query, &mut snake);
+            Snake::remove_tails(&mut commands, &query, &mut snake, Powerup::Shorten.power());
         }
     }
 }

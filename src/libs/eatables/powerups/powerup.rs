@@ -68,8 +68,8 @@ impl Powerup {
         match self {
             Powerup::Normal => 0,
             Powerup::Slowdown => 20,
-            Powerup::Shorten => 0,
-            Powerup::Feast => 2,
+            Powerup::Shorten => 3,
+            Powerup::Feast => 4,
         }
     }
 }

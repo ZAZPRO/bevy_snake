@@ -69,17 +69,20 @@ impl Snake {
         }
     }
 
-    pub fn remove_last_tail(
+    pub fn remove_tails(
         commands: &mut Commands,
         query: &Query<Entity, With<Tail>>,
         snake: &mut ResMut<Snake>,
+        amount: u32,
     ) {
-        let last_id = snake.parts.last().unwrap();
-        let last_tail = query.get(*last_id);
+        for _ in 0..amount {
+            let last_id = snake.parts.last().unwrap();
+            let last_tail = query.get(*last_id);
 
-        if let Ok(id) = last_tail {
-            commands.entity(id).despawn();
-            snake.parts.pop();
+            if let Ok(id) = last_tail {
+                commands.entity(id).despawn();
+                snake.parts.pop();
+            }
         }
     }
 }
