@@ -5,7 +5,7 @@ use std::io::Cursor;
 use bevy::{
     prelude::*,
     window::{PresentMode, PrimaryWindow},
-    winit::WinitWindows,
+    winit::WinitWindows, asset::AssetMetaCheck,
 };
 use bevy_particle_systems::ParticleSystemPlugin;
 use snake::libs::{
@@ -50,6 +50,7 @@ fn set_window_icon(
 fn main() {
     let mut app = App::new();
     app.insert_resource(ClearColor(BACKGROUND_COLOR))
+        .insert_resource(AssetMetaCheck::Never)
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
                 title: "Snake".into(),
@@ -63,7 +64,7 @@ fn main() {
                 ..default()
             }),
             ..default()
-        }))
+        },))
         .add_systems(PreStartup, set_window_icon)
         .add_plugins(SchedulePlugin)
         .add_plugins(GameStatatesPlugin)

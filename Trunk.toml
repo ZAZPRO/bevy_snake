@@ -1,4 +1,4 @@
 [build]
-public_url = "/"
+public_url = "./"
 release = true
 no_minification = false
