@@ -12,9 +12,9 @@ fn pause_game(mut ev_pause: EventReader<ActionPauseEvent>, mut time: ResMut<Time
     }
 }
 
-pub struct PausePlugin;
+pub struct GamePausePlugin;
 
-impl Plugin for PausePlugin {
+impl Plugin for GamePausePlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Update, pause_game.in_set(InGameSet::UserInput));
     }

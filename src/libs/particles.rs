@@ -37,9 +37,9 @@ fn spawn_particle_on_eat(mut ev_eat: EventReader<EatEvent>, mut commands: Comman
     }
 }
 
-pub struct ParticlePlugin;
+pub struct OnEatParticlePlugin;
 
-impl Plugin for ParticlePlugin {
+impl Plugin for OnEatParticlePlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Update,

@@ -12,9 +12,9 @@ pub enum InGameSet {
     CollisionDetection,
 }
 
-pub struct SchedulePlugin;
+pub struct GameSchedulePlugin;
 
-impl Plugin for SchedulePlugin {
+impl Plugin for GameSchedulePlugin {
     fn build(&self, app: &mut App) {
         app.configure_sets(
             Update,

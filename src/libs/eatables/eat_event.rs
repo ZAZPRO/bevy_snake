@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::libs::{cell::Cell, snake::Head, schedule::InGameSet};
+use crate::libs::{cell::Cell, schedule::InGameSet, snake::Head};
 
 use super::food::Food;
 
@@ -25,9 +25,9 @@ fn send_eat_event(
     }
 }
 
-pub struct EventsPlugin;
+pub struct EatEventPlugin;
 
-impl Plugin for EventsPlugin {
+impl Plugin for EatEventPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<EatEvent>()
             .add_systems(Update, send_eat_event.in_set(InGameSet::CollisionDetection));

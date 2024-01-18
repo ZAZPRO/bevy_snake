@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use super::{game_states::GameState, schedule::InGameSet, eatables::eat_event::EatEvent};
+use super::{eatables::eat_event::EatEvent, game_states::GameState, schedule::InGameSet};
 
 #[derive(Resource, Default)]
 pub struct Score(pub u32);

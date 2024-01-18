@@ -3,9 +3,10 @@
 use std::io::Cursor;
 
 use bevy::{
+    asset::AssetMetaCheck,
     prelude::*,
     window::{PresentMode, PrimaryWindow},
-    winit::WinitWindows, asset::AssetMetaCheck,
+    winit::WinitWindows,
 };
 use bevy_particle_systems::ParticleSystemPlugin;
 use snake::libs::{
@@ -13,14 +14,14 @@ use snake::libs::{
     audio::AudioPlugin,
     camera::CameraPlugin,
     cell::CellPlugin,
-    eatables::{eat_event::EventsPlugin, food::FoodPlugin, powerups::powerup::PowerupPlugins},
+    eatables::{eat_event::EatEventPlugin, food::FoodPlugin, powerups::powerup::PowerupPlugins},
     game_configuration::GameConfigurationPlugin,
     game_states::GameStatatesPlugin,
     globals::{BACKGROUND_COLOR, WINDOW_SIZE},
     input::{action_events::ActionEventsPlugin, read_input::ReadInputPlugin},
-    particles::ParticlePlugin,
-    pause::PausePlugin,
-    schedule::SchedulePlugin,
+    particles::OnEatParticlePlugin,
+    pause::GamePausePlugin,
+    schedule::GameSchedulePlugin,
     score::ScorePlugin,
     snake::SnakePlugin,
     ui::snake_ui_plugin::SnakeUiPlugins,
@@ -64,11 +65,11 @@ fn main() {
                 ..default()
             }),
             ..default()
-        },))
+        }))
         .add_systems(PreStartup, set_window_icon)
-        .add_plugins(SchedulePlugin)
+        .add_plugins(GameSchedulePlugin)
         .add_plugins(GameStatatesPlugin)
-        .add_plugins(EventsPlugin)
+        .add_plugins(EatEventPlugin)
         .add_plugins(AudioPlugin)
         .add_plugins(ParticleSystemPlugin)
         .add_plugins(GameConfigurationPlugin)
@@ -80,8 +81,8 @@ fn main() {
         .add_plugins(CellPlugin)
         .add_plugins(FoodPlugin)
         .add_plugins(SnakePlugin)
-        .add_plugins(ParticlePlugin)
-        .add_plugins(PausePlugin)
+        .add_plugins(OnEatParticlePlugin)
+        .add_plugins(GamePausePlugin)
         .add_plugins(PowerupPlugins)
         .add_plugins(SnakeUiPlugins);
 
